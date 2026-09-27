@@ -1,0 +1,100 @@
+name: Publish public demo
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - 'backend/app/research/market_news.py'
+      - 'scripts/export_market_news.py'
+      - 'scripts/check_public_demo.py'
+      - 'scripts/release_privacy.py'
+      - '.github/workflows/pages.yml'
+  schedule:
+    - cron: '17 */6 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-demo-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.repository == 'johnson-lee-v0/Equity-Research' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out public source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python for the public RSS reader
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Check source publication policy
+        shell: bash
+        run: |
+          git ls-files > "${RUNNER_TEMP}/public-source-manifest.txt"
+          python scripts/release_privacy.py --root . \
+            --manifest "${RUNNER_TEMP}/public-source-manifest.txt" \
+            --git-root . --allow-empty-private-inputs
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Prepare locked pnpm
+        shell: bash
+        run: |
+          pnpm_prefix="${RUNNER_TEMP}/pnpm-11.19.0"
+          npm install --prefix "${pnpm_prefix}" --no-audit --no-fund --ignore-scripts pnpm@11.19.0
+          echo "${pnpm_prefix}/node_modules/.bin" >> "${GITHUB_PATH}"
+
+      - name: Install locked frontend dependencies
+        run: pnpm --dir frontend install --frozen-lockfile
+
+      - name: Verify public examples and isolation
+        run: node --test frontend/tests/public-demo.test.mjs frontend/tests/market-news.test.mjs
+
+      - name: Build only the public demo
+        run: pnpm --dir frontend run build:demo
+
+      - name: Refresh public market headlines
+        run: |
+          python -m pip install --disable-pip-version-check 'httpx==0.28.1'
+          python scripts/export_market_news.py --output frontend/dist/demo/market-news.json
+
+      - name: Inspect the exact Pages artifact
+        run: |
+          python scripts/check_public_demo.py frontend/dist/demo
+          python scripts/release_privacy.py --root . --tree frontend/dist/demo \
+            --no-git-history --allow-empty-private-inputs
+
+      - name: Upload only static public demo files
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: frontend/dist/demo
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Read Pages configuration
+        uses: actions/configure-pages@v5
+      - name: Deploy the inspected artifact
+        id: deployment
+        uses: actions/deploy-pages@v4

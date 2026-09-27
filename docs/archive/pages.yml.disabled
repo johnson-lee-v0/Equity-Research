@@ -1,0 +1,39 @@
+# Disabled intentionally: ResearchCouncil is a local-only application.
+#
+# This file preserves the former Pages workflow for historical reference.  The
+# .disabled suffix keeps GitHub Actions from loading it.  The supported build
+# workflow is .github/workflows/ci.yml; it checks source without publishing.
+name: Deploy ResearchCouncil Research Desk to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload static site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

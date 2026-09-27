@@ -1,0 +1,69 @@
+.earnings-area-trends { min-width: 0; }
+.earnings-trend-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
+.earnings-trend-kicker { font-size: .64rem; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+.earnings-trend-loading { font-size: .7rem; color: var(--muted); }
+.earnings-area-trends h4 { font-size: .82rem; color: var(--ink); font-weight: 550; margin: 0; }
+.earnings-trend-selector { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+.earnings-trend-selector button { font: inherit; font-size: .69rem; line-height: 1.35; padding: 7px 9px; border: 1px solid var(--line); border-radius: 5px; background: transparent; color: var(--muted); text-align: left; cursor: pointer; min-height: 32px; }
+.earnings-trend-selector button[aria-pressed=true] { background: color-mix(in srgb, var(--green) 9%, transparent); color: var(--green); border-color: color-mix(in srgb, var(--green) 45%, var(--line)); }
+.earnings-trend-coverage { display: block; margin-top: 4px; font-size: .65rem; line-height: 1.4; color: var(--ink); }
+.earnings-capex-basis-note { border-left: 2px solid var(--line); padding-left: 9px; }
+.earnings-capex-calculation ul { padding-left: 16px; margin: 8px 0; }
+.earnings-capex-calculation li + li { margin-top: 8px; }
+.earnings-trend-selector button:focus-visible, .earnings-trend-sources summary:focus-visible, .earnings-capex-guidance summary:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+.earnings-trend-basis, .earnings-trend-empty, .earnings-trend-note { color: var(--muted); font-size: .71rem; line-height: 1.65; margin: 7px 0 0; }
+.earnings-trend-empty { padding: 10px 0; }
+.earnings-trend-chart { margin-top: 8px; width: 100%; }
+.earnings-trend-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.earnings-chart-grid { stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 4; }
+.earnings-chart-zero { stroke: var(--line); stroke-width: 1; }
+.earnings-chart-bar { fill: var(--green); opacity: .82; }
+.earnings-chart-bar.guidance { fill: color-mix(in srgb, var(--green) 5%, transparent); stroke: var(--green); stroke-width: 1.7; stroke-dasharray: 4 3; opacity: 1; }
+.earnings-chart-bar.bound { fill: color-mix(in srgb, var(--green) 13%, transparent); stroke: var(--green); stroke-width: 1.4; stroke-dasharray: 1 3; opacity: 1; }
+.earnings-chart-range { stroke: var(--ink); stroke-width: 1.4; }
+.earnings-chart-axis { font-family: inherit; font-size: 10px; fill: var(--muted); }
+.earnings-chart-period { font-family: inherit; font-size: 11px; fill: var(--muted); }
+.earnings-chart-value { font-family: inherit; font-size: 12px; font-weight: 550; fill: var(--ink); }
+.earnings-trend-chart-meta { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; color: var(--muted); font-size: .65rem; }
+.earnings-trend-legend { display: inline-flex; align-items: center; gap: 5px; }
+.earnings-trend-legend i { display: inline-block; width: 8px; height: 8px; background: var(--green); margin-left: 4px; }
+.earnings-trend-legend i.guidance { border: 1px dashed var(--green); background: transparent; }
+.earnings-trend-legend i.bound { border: 1px dotted var(--green); background: color-mix(in srgb, var(--green) 13%, transparent); }
+.earnings-trend-change { color: var(--ink); font-size: .75rem; line-height: 1.65; margin: 9px 0 0; }
+.earnings-trend-sources { margin-top: 10px; }
+.earnings-trend-sources summary { font-size: .71rem; line-height: 1.7; color: var(--green); cursor: pointer; width: fit-content; }
+.earnings-trend-table-wrap { width: 100%; overflow-x: auto; }
+.earnings-trend-table-wrap table { border-collapse: collapse; width: 100%; font-size: .7rem; color: var(--ink); text-align: left; margin-top: 10px; }
+.earnings-trend-table-wrap caption { text-align: left; color: var(--muted); font-size: .68rem; line-height: 1.6; padding: 0 0 9px; }
+.earnings-trend-table-wrap th, .earnings-trend-table-wrap td { border-bottom: 1px solid var(--line); padding: 9px 10px 9px 0; vertical-align: top; line-height: 1.6; }
+.earnings-trend-table-wrap th { font-weight: 550; }
+.earnings-trend-table-wrap th:first-child { min-width: 62px; }
+.earnings-trend-table-wrap th:last-child, .earnings-trend-table-wrap td:last-child { padding-right: 0; }
+.earnings-trend-table-wrap small { display: block; font-size: .62rem; color: var(--muted); font-weight: 400; margin-top: 3px; }
+.earnings-trend-table-wrap a, .earnings-capex-explanations a { color: var(--green); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.earnings-trend-table-wrap blockquote { color: var(--muted); font-size: .69rem; line-height: 1.65; margin: 6px 0 0; max-width: 62ch; }
+.earnings-capex-guidance { margin-top: 15px; border-top: 1px solid var(--line); padding-top: 13px; }
+.earnings-capex-guidance > h4 { color: var(--ink); font-size: .76rem; line-height: 1.6; font-weight: 550; margin: 0; }
+.earnings-capex-summary { color: var(--muted); font-size: .73rem; line-height: 1.7; margin: 7px 0 9px; }
+.earnings-capex-guidance summary { color: var(--green); font-size: .76rem; line-height: 1.6; cursor: pointer; }
+.earnings-capex-guidance-body > p, .earnings-capex-explanations p { color: var(--muted); font-size: .72rem; line-height: 1.7; margin: 10px 0; }
+.earnings-capex-explanations h4 { margin: 16px 0 7px; font-size: .74rem; color: var(--ink); font-weight: 550; }
+.earnings-capex-explanations blockquote { font-size: .73rem; line-height: 1.7; margin: 8px 0; }
+.earnings-capex-explanations a { font-size: .7rem; }
+.earnings-capex-explanation + .earnings-capex-explanation { margin-top: 15px; padding-top: 5px; border-top: 1px solid var(--line); }
+.earnings-capex-explanations .earnings-capex-explanation-meta { color: var(--ink); font-size: .66rem; margin-bottom: 5px; }
+.earnings-guidance-revisions { margin-top: 8px; }
+.earnings-capex-guidance .earnings-guidance-revisions > summary { font-size: .65rem; }
+.earnings-guidance-revisions ul { list-style: none; padding: 0; margin: 8px 0 0; }
+.earnings-guidance-revisions li + li { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--line); }
+.earnings-trends-gaps { margin-top: 16px; color: var(--muted); font-size: .73rem; line-height: 1.7; }
+.earnings-trends-gaps summary { cursor: pointer; color: var(--ink); }
+.earnings-trends-gaps ul { padding-left: 18px; margin: 8px 0; }
+@media (max-width: 560px) {
+  .earnings-trend-selector button { min-height: 40px; }
+  .earnings-trend-chart { margin-inline: -6px; width: calc(100% + 12px); }
+  .earnings-trend-table-wrap th, .earnings-trend-table-wrap td { padding-right: 8px; }
+  .earnings-capex-guidance .earnings-trend-table-wrap table { min-width: 410px; }
+}
+.earnings-chart-bar.projection { fill: rgba(224, 195, 147, .14); stroke: var(--amber, #e0c393); stroke-width: 2; stroke-dasharray: 2 3; }
+.earnings-trend-legend i.projection { background: rgba(224, 195, 147, .14); border: 1px dashed var(--amber, #e0c393); }

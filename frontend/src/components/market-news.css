@@ -1,0 +1,20 @@
+.market-news { margin: -9px 0 24px; }
+.market-news > header { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.market-news h2 { margin: 0; font-size: .92rem; font-weight: 650; }
+.market-news > header > span { font-size: .67rem; color: var(--muted); }
+.market-news-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 9px; }
+.market-news-tile { display: flex; flex-direction: column; gap: 7px; min-width: 0; padding: 13px 14px; border: 1px solid var(--line); border-radius: 9px; background: var(--bg-raised); color: var(--ink); text-decoration: none; }
+.market-news-tile:hover { border-color: var(--green); background: rgba(89,167,126,.09); }
+.market-news-tile:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+.market-news-source { display: flex; align-items: center; justify-content: space-between; color: var(--green); font-size: .66rem; font-weight: 600; }
+.market-news-tile h3 { margin: 0; font-size: .78rem; line-height: 1.45; font-weight: 550; }
+.market-news-tile time { margin-top: auto; color: var(--muted); font-size: .64rem; }
+.market-news-status { display: flex; gap: 12px; align-items: center; margin: 9px 0; font-size: .75rem; color: var(--muted); }
+.command-intro { padding: 16px 16px 0; }
+.command-intro h1 { margin: 0 0 5px; font-size: 1.4rem; line-height: 1.2; font-weight: 600; }
+.command-intro p { margin: 0; color: var(--muted); font-size: .78rem; }
+.command-options summary { cursor: pointer; color: var(--muted); font-size: .7rem; }
+.research-count-summary { margin: -6px 0 15px; color: var(--muted); font-size: .75rem; }
+.decision-card-foot .decision-card-cta { color: var(--ink); border-radius: 5px; padding: 5px 8px; background: rgba(107,188,143,.17); font-weight: 650; }
+@media(max-width:900px) { .market-news-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:520px) { .market-news > header { flex-direction: column; gap: 4px; } .market-news-grid { grid-template-columns: 1fr; } .market-news-tile { padding: 12px; } .market-news-tile h3 { font-size: .81rem; } .command-intro { padding: 14px 12px 0; } }

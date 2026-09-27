@@ -1,0 +1,657 @@
+/* Office-only presentation overrides. The shared stylesheet supplies the
+   application palette and common controls; this file keeps the floor and its
+   compact inspector readable without changing other workspace views. */
+
+.office-experience {
+  width: 100%;
+}
+
+.office-experience .office-heading {
+  margin-bottom: 17px;
+}
+
+.office-experience .office-heading p {
+  font-size: .92rem;
+}
+
+.office-question-banner {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 13px;
+  margin: 0 0 16px;
+  border: 1px solid rgba(134, 185, 207, .35);
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: linear-gradient(105deg, rgba(26, 53, 55, .9), rgba(12, 33, 28, .9));
+}
+
+.office-question-mark {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid rgba(134, 185, 207, .38);
+  border-radius: 9px;
+  color: var(--blue);
+  background: rgba(134, 185, 207, .09);
+}
+
+.office-question-copy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.office-question-copy h2 {
+  margin: 0;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: .94rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.office-question-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  color: var(--muted);
+  font-size: .7rem;
+}
+
+.office-question-meta span + span {
+  border-left: 1px solid var(--line-strong);
+  padding-left: 12px;
+}
+
+.office-question-blocker {
+  color: var(--amber);
+}
+
+.office-question-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.office-experience .office-card {
+  overflow: visible;
+}
+
+.office-experience .office-toolbar {
+  min-height: 66px;
+  padding: 11px 15px;
+}
+
+.office-experience .toolbar-title > span:last-child {
+  font-size: .77rem;
+}
+
+.office-experience .office-tools {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.office-experience .view-switch button {
+  min-height: 34px;
+  padding: 6px 9px;
+  font-size: .73rem;
+}
+
+.office-experience .office-tools > .icon-button {
+  width: 36px;
+  height: 36px;
+  font-size: 1rem;
+}
+
+.office-start-simulation {
+  min-height: 36px;
+  white-space: nowrap;
+}
+
+.office-experience .scene-wrap {
+  position: relative;
+  z-index: 0;
+  height: min(620px, max(410px, calc(100vh - 290px)));
+  overflow: hidden;
+  contain: paint;
+}
+
+.office-experience .office-canvas,
+.office-experience .office-canvas canvas {
+  position: relative;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.office-experience .scene-demo-stamp,
+.office-experience .scene-legend {
+  z-index: 4;
+}
+
+.office-experience .scene-agent-label {
+  min-width: 70px;
+  min-height: 30px;
+  border-width: 1px;
+  padding: 5px 7px;
+  font-size: 11px;
+  line-height: 1.2;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.office-experience .scene-agent-label strong {
+  max-width: 142px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.office-experience .scene-agent-code {
+  font-size: 10px;
+}
+
+.office-experience .scene-door-plate {
+  min-height: 31px;
+  padding: 5px 7px;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.office-experience .scene-door-plate:focus-visible,
+.office-experience .scene-agent-label:focus-visible,
+.office-experience .fallback-desk:focus-visible,
+.office-experience .fallback-simulation-action:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+.office-experience .scene-room-label strong {
+  font-size: 10px;
+}
+
+.office-experience .scene-room-label span {
+  font-size: 9px;
+}
+
+.office-experience .scene-reception-sign {
+  display: none !important;
+}
+
+.office-experience .office-fallback {
+  height: 100%;
+  overflow: auto;
+  padding: 20px;
+  background: linear-gradient(145deg, #102a20, #081a14);
+}
+
+.office-experience .fallback-intro {
+  max-width: 740px;
+  margin-bottom: 17px;
+}
+
+.office-experience .fallback-intro-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.office-experience .fallback-intro h2 {
+  margin: 5px 0 4px;
+  font-family: Georgia, serif;
+  font-size: 1.32rem;
+  font-weight: 400;
+}
+
+.office-experience .fallback-intro p {
+  max-width: 680px;
+  margin: 0;
+  color: var(--muted);
+  font-size: .8rem;
+  line-height: 1.45;
+}
+
+.office-experience .fallback-specialist-toggle {
+  flex: 0 0 auto;
+  min-height: 29px;
+  padding: 5px 8px;
+  font-size: .66rem;
+}
+
+.office-experience .fallback-floor {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.office-experience .fallback-desk-wrap {
+  display: grid;
+  align-content: start;
+  min-width: 0;
+  gap: 6px;
+}
+
+.office-experience .fallback-desk {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  min-width: 0;
+  min-height: 126px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  padding: 11px;
+  background: rgba(20, 46, 35, .92);
+  color: var(--muted);
+  text-align: left;
+}
+
+.office-experience .fallback-logical-floor {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.office-experience .fallback-logical-desk {
+  min-height: 142px;
+}
+
+.office-experience .fallback-logical-wrap {
+  min-width: 0;
+}
+
+.office-experience .fallback-group-note {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--faint);
+  font-size: .66rem;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.office-experience .fallback-code-card .fallback-logical-desk {
+  border-color: rgba(134, 185, 207, .28);
+  background: rgba(134, 185, 207, .055);
+}
+
+.office-experience .fallback-code-card .fallback-status {
+  color: var(--blue);
+}
+
+.office-experience .fallback-desk:hover,
+.office-experience .fallback-desk.is-selected {
+  border-color: var(--gold);
+  background: #1c3d2d;
+}
+
+.office-experience .fallback-desk-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+}
+
+.office-experience .fallback-code {
+  color: var(--gold);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.office-experience .fallback-status {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: .67rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.office-experience .fallback-desk strong {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: .86rem;
+  font-weight: 650;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.office-experience .fallback-title,
+.office-experience .fallback-room {
+  color: var(--muted);
+  font-size: .72rem;
+  line-height: 1.25;
+}
+
+.office-experience .fallback-room {
+  color: var(--faint);
+  font-size: .65rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.office-experience .fallback-task {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 3px;
+  color: var(--amber);
+  font-size: .68rem;
+  line-height: 1.3;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.office-experience .fallback-question-state {
+  display: grid;
+  gap: 2px;
+  margin-top: 4px;
+  border-left: 2px solid var(--line-strong);
+  padding: 3px 0 3px 7px;
+}
+
+.office-experience .fallback-question-state strong {
+  overflow: visible;
+  color: var(--ink);
+  font-size: .68rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.office-experience .fallback-question-state small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: .64rem;
+  line-height: 1.28;
+  text-overflow: ellipsis;
+}
+
+.office-experience .fallback-question-state-selected {
+  border-left-color: var(--green);
+}
+
+.office-experience .fallback-question-state-selected strong {
+  color: var(--green);
+}
+
+.office-experience .fallback-question-state-skipped {
+  border-left-color: var(--faint);
+}
+
+.office-experience .fallback-question-state-routing_pending {
+  border-left-color: var(--amber);
+}
+
+.office-experience .fallback-question-state-routing_pending strong,
+.office-experience .fallback-question-state-simulation_only strong {
+  color: var(--amber);
+}
+
+.office-experience .fallback-question-state-simulation_only {
+  border-left-color: var(--purple, #b7a1e4);
+}
+
+.office-experience .fallback-latest-work {
+  display: grid;
+  align-content: start;
+  gap: 3px;
+  min-width: 0;
+  border: 1px solid rgba(134, 185, 207, .19);
+  border-radius: 7px;
+  padding: 7px 8px;
+  background: rgba(134, 185, 207, .045);
+}
+
+.office-experience .fallback-latest-label {
+  color: var(--blue);
+  font-size: .58rem;
+  font-weight: 750;
+  letter-spacing: .09em;
+}
+
+.office-experience .fallback-latest-title {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: .69rem;
+  line-height: 1.28;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.office-experience .fallback-latest-note {
+  color: var(--muted);
+  font-size: .63rem;
+  line-height: 1.25;
+}
+
+.office-experience .fallback-output-action {
+  justify-self: start;
+  min-height: 28px;
+  padding: 4px 7px;
+  font-size: .66rem;
+}
+
+.office-experience .fallback-simulation-action {
+  width: 100%;
+  min-height: 34px;
+  font-size: .7rem;
+}
+
+@media (max-width: 1080px) {
+  .office-experience .fallback-logical-floor {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.office-experience .office-bottom-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+.office-experience .office-team-context {
+  grid-column: 1 / -1;
+}
+
+.office-role-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.office-role-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 27px;
+  border: 1px solid rgba(120, 208, 162, .22);
+  border-radius: 5px;
+  padding: 4px 7px;
+  color: var(--muted);
+  background: rgba(120, 208, 162, .055);
+  font-size: .69rem;
+}
+
+.office-role-chip strong {
+  color: var(--ink);
+  font-family: inherit;
+  font-size: .69rem;
+  font-weight: 550;
+}
+
+.office-role-chip small {
+  color: var(--faint);
+  font-family: ui-monospace, monospace;
+  font-size: .65rem;
+}
+
+.office-context-state {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 7px;
+  color: var(--faint);
+  font-size: .65rem;
+}
+
+.office-context-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: .73rem;
+  line-height: 1.45;
+}
+
+.office-context-note strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.office-context-blocker {
+  color: var(--amber);
+}
+
+/* An open agent record should have the whole floor available first. The
+   inspector becomes a readable continuation below it at compact desktop
+   widths instead of shrinking the 3D/list surface into a sliver. */
+@media (max-width: 1360px) {
+  .app-body:has(.office-experience) {
+    grid-template-columns: 210px minmax(0, 1fr);
+  }
+
+  .app-body:has(.office-experience) > .main-content {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .app-body:has(.office-experience) > .inspector {
+    grid-column: 2;
+    grid-row: 2;
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    width: auto;
+    height: auto;
+    max-height: none;
+    margin: 0 17px 84px;
+    border-top: 1px solid var(--line-strong);
+    border-left: 0;
+    box-shadow: none;
+  }
+
+  .app-body:has(.office-experience) > .inspector .inspector-scroll {
+    height: auto;
+    max-height: 470px;
+  }
+}
+
+@media (max-width: 900px) {
+  .office-question-banner {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .office-question-actions {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
+
+  .office-experience .scene-wrap {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    contain: none;
+  }
+
+  .office-experience .office-fallback {
+    height: auto;
+    overflow: visible;
+  }
+
+  .office-experience .fallback-floor {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .office-experience .office-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .office-experience .office-team-context {
+    grid-column: auto;
+  }
+
+  .app-body:has(.office-experience) > .inspector {
+    display: flex;
+    width: auto;
+    margin: 14px 11px 84px;
+  }
+}
+
+@media (max-width: 620px) {
+  .office-question-banner {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .office-question-actions {
+    grid-column: auto;
+  }
+
+  .office-question-copy h2 {
+    white-space: normal;
+  }
+
+  .office-question-meta {
+    display: grid;
+    gap: 4px;
+  }
+
+  .office-question-meta span + span {
+    border-left: 0;
+    padding-left: 0;
+  }
+
+  .office-experience .office-toolbar {
+    align-items: flex-start;
+  }
+
+  .office-experience .office-tools {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .office-experience .fallback-floor {
+    grid-template-columns: 1fr;
+  }
+
+  .office-experience .fallback-intro-heading {
+    display: grid;
+    gap: 9px;
+  }
+
+  .office-experience .fallback-specialist-toggle {
+    justify-self: start;
+  }
+
+  .office-experience .fallback-desk {
+    min-height: 112px;
+  }
+}
+.office-paused-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0 0 15px;
+  border: 1px solid rgba(224, 185, 105, .4);
+  border-radius: 9px;
+  padding: 11px 12px;
+  color: var(--amber);
+  background: rgba(224, 185, 105, .07);
+}
+
+.office-paused-banner > div { display: grid; gap: 2px; }
+.office-paused-banner strong { color: var(--ink); font-size: .76rem; }
+.office-paused-banner span { color: var(--muted); font-size: .71rem; line-height: 1.4; }

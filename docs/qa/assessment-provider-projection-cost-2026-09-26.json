@@ -1,0 +1,44 @@
+{
+  "measurement": "Read-only archived COST provider-fact projection",
+  "run_id": "run_5d1294c72ebf4cec919f7d8f12122233",
+  "attempt_id": "att_c17676bc10c3401c8e0c9c3370004793",
+  "projection_version": "earnings-provider-facts.v1",
+  "source_count": 21,
+  "original_prompt_chars_from_event": 412225,
+  "compiler_context_chars": 103759,
+  "measured_reconstructed_subset_context_before": 364443,
+  "measured_reconstructed_subset_context_after": 153283,
+  "saved_serialized_chars": 211160,
+  "predicted_original_prompt_chars_after_projection": 201065,
+  "prediction_note": "Original measured prompt minus the exact JSON-character delta in the two fact registers. No new model call or live timing claim.",
+  "projection_elapsed_seconds": 0.031,
+  "replaced_excerpt_count": 4,
+  "unique_revalidated_eps_facts": 2,
+  "exact_eps_quote_chars_each": 155,
+  "per_field_before": {
+    "prior_outputs": 138677,
+    "financial_seeds": 126354,
+    "evidence": 80496,
+    "earnings_context": 12804
+  },
+  "per_field_after": {
+    "prior_outputs": 33097,
+    "financial_seeds": 20774,
+    "evidence": 80496,
+    "earnings_context": 12804
+  },
+  "assertions": {
+    "complete_latest_call_unchanged": true,
+    "full_release_unchanged": true,
+    "trend_and_guidance_context_unchanged": true,
+    "only_fact_excerpt_fields_changed": true,
+    "period_unit_currency_basis_identity_and_validation_metadata_retained": true,
+    "fresh_and_stale_labels_preserved": true,
+    "strict_eps_parser_revalidated_frozen_source_hashes_and_versions": true,
+    "original_context_and_source_objects_not_mutated": true,
+    "read_only_sqlite_connection": true,
+    "live_database_mutations": false,
+    "live_model_calls": false
+  },
+  "focused_projection_tests": {"passed": 15}
+}

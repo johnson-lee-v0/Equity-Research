@@ -1,0 +1,118 @@
+name: Validate ResearchCouncil
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    env:
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          # pnpm 11.19.0 requires Node.js >=22.13.0. Keep CI on the
+          # supported Node 24 line so it never routes through Corepack's
+          # incompatible pnpm importer.
+          node-version: '24'
+
+      - name: Prepare locked pnpm
+        if: hashFiles('frontend/pnpm-lock.yaml') != ''
+        shell: bash
+        run: |
+          # Install the pinned CLI into the runner temp directory with an
+          # ordinary npm prefix. CI does not depend on Corepack or mutate a
+          # host-global toolchain.
+          pnpm_prefix="${RUNNER_TEMP}/pnpm-11.19.0"
+          npm install --prefix "${pnpm_prefix}" \
+            --no-audit --no-fund --ignore-scripts pnpm@11.19.0
+          echo "${pnpm_prefix}/node_modules/.bin" >> "${GITHUB_PATH}"
+          export PATH="${pnpm_prefix}/node_modules/.bin:${PATH}"
+          test "$(pnpm --version)" = "11.19.0"
+
+      - name: Install backend dependencies
+        shell: bash
+        run: |
+          if [[ -f backend/requirements.lock.txt ]]; then
+            python -m pip install --disable-pip-version-check -r backend/requirements.lock.txt
+          elif [[ -f backend/requirements.txt ]]; then
+            python -m pip install --disable-pip-version-check -r backend/requirements.txt
+          elif [[ -f backend/pyproject.toml ]]; then
+            python -m pip install --disable-pip-version-check -e backend
+          else
+            python -m pip install --disable-pip-version-check \
+              'fastapi>=0.115,<1' 'uvicorn[standard]>=0.30,<1' \
+              'pydantic>=2.7,<3' 'pytest>=8,<9' 'httpx>=0.27,<1'
+          fi
+
+      - name: Check and test backend
+        shell: bash
+        run: |
+          python -m compileall -q backend/app scripts/road2m_data.py
+          if [[ -d backend/tests ]]; then
+            python -m pytest backend/tests -q
+          fi
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        shell: bash
+        run: |
+          if [[ -f pnpm-lock.yaml ]]; then
+            pnpm install --frozen-lockfile
+          elif [[ -f package-lock.json ]]; then
+            npm ci --no-audit --no-fund
+          elif [[ -f yarn.lock ]]; then
+            corepack enable
+            corepack yarn install --frozen-lockfile
+          else
+            npm install --no-audit --no-fund
+          fi
+
+      - name: Build frontend
+        working-directory: frontend
+        shell: bash
+        run: |
+          if [[ -f pnpm-lock.yaml ]]; then
+            pnpm run build
+          elif [[ -f yarn.lock ]]; then
+            corepack yarn build
+          else
+            npm run build
+          fi
+
+      - name: Test frontend interactions
+        run: node --test frontend/tests/*.test.mjs
+
+      - name: Check source publication policy
+        shell: bash
+        run: |
+          git ls-files > "${RUNNER_TEMP}/public-source-manifest.txt"
+          python scripts/release_privacy.py --root . \
+            --manifest "${RUNNER_TEMP}/public-source-manifest.txt" \
+            --git-root . --allow-empty-private-inputs
+
+      - name: Build and inspect the public demo separately
+        run: |
+          pnpm --dir frontend run build:demo
+          python scripts/export_market_news.py --output frontend/dist/demo/market-news.json
+          python scripts/check_public_demo.py frontend/dist/demo
+          python scripts/release_privacy.py --root . --tree frontend/dist/demo \
+            --no-git-history --allow-empty-private-inputs

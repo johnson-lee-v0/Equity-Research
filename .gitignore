@@ -1,0 +1,46 @@
+.DS_Store
+*.log
+.idea/
+.vscode/
+node_modules/
+__pycache__/
+*.py[cod]
+tmp/
+runtime/
+/.runtime/
+private-data.local.js
+private-data.local.json
+
+# Local Python environment and frontend build output
+/.venv/
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.vite/
+/frontend/coverage/
+*.tsbuildinfo
+
+# Private application state.  The install command creates these directories
+# with owner-only permissions; never add personal records or evidence to git.
+/data/
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
+
+# Runtime credentials, local overrides, exports and backups
+.env
+.env.*
+!.env.example
+praw.ini
+providers.json
+credentials.json
+/.road2m.pid
+/exports/
+/backups/
+
+# The original product brief includes private working notes.  Keep it locally
+# for the build team while publishing the sanitized public brief instead.
+/PRD.html
+
+# The experimental prototypes are intentionally preserved locally but are not
+# part of the shareable application source.
+/exp/

@@ -1,0 +1,29 @@
+# Optional, isolated Laya runtime.  These packages are intentionally kept out
+# of backend/requirements.txt: normal app imports must not load ML frameworks.
+# The pins support the documented Python 3.10 and 3.11 runtimes on arm64.
+numpy==2.2.2
+torch==2.6.0
+transformers==4.48.3
+safetensors==0.5.2
+huggingface_hub==0.28.1
+tokenizers==0.21.0
+filelock==3.17.0
+fsspec==2024.12.0
+packaging==24.2
+pyyaml==6.0.2
+regex==2024.11.6
+requests==2.32.3
+tqdm==4.67.1
+setuptools==75.8.0
+wheel==0.45.1
+typing-extensions==4.16.0
+networkx==3.4.2
+jinja2==3.1.6
+sympy==1.13.1
+mpmath==1.3.0
+markupsafe==3.0.3
+certifi==2026.7.22
+charset-normalizer==3.5.1
+idna==3.20
+urllib3==2.8.0
+laya @ git+https://github.com/NandhaKishorM/laya.git@573e5b62696ba441230cd6be71d593331b5d23af

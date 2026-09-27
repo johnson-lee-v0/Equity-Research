@@ -1,0 +1,67 @@
+{
+  "description": "Synthetic META-style identity failure; no real company documents or financial data.",
+  "ticker": "NVM",
+  "cik": "0000012345",
+  "now": "2025-09-26T12:00:00Z",
+  "urls": {
+    "directory": "https://www.sec.gov/files/company_tickers.json",
+    "submissions": "https://data.sec.gov/submissions/CIK0000012345.json",
+    "blocked_hint": "https://www.sec.gov/Archives/edgar/data/12345/000001234525000010/exhibit991.htm",
+    "release": "https://investor.awaybrand.example/results/2025-q2",
+    "about": "https://www.novum.example/about/company-info",
+    "leadership": "https://www.novum.example/about/leadership",
+    "ir": "https://investor.awaybrand.example/home/default.aspx"
+  },
+  "directory": {
+    "0": {"ticker": "NVM", "cik_str": 12345}
+  },
+  "submissions": {
+    "cik": "0000012345",
+    "name": "Novum Corporation",
+    "tickers": ["NVM"],
+    "website": "",
+    "investorWebsite": "",
+    "fiscalYearEnd": "1231",
+    "filings": {
+      "recent": {
+        "form": ["8-K"],
+        "reportDate": ["2025-07-29"],
+        "filingDate": ["2025-07-29"],
+        "accessionNumber": ["0000012345-25-000010"],
+        "primaryDocument": ["earnings.htm"],
+        "items": ["2.02,9.01"]
+      },
+      "files": []
+    }
+  },
+  "event": {
+    "period_end": "2025-06-30",
+    "fiscal_period": "Q2 FY2025",
+    "earnings_date": "2025-07-29",
+    "expected_form": "10-Q",
+    "release_url": "https://investor.awaybrand.example/results/2025-q2",
+    "issuer_page_url": "https://www.sec.gov/Archives/edgar/data/12345/000001234525000010/exhibit991.htm",
+    "alternate_release_urls": [],
+    "transcript_urls": [],
+    "notes": "Synthetic event candidate; authority must come from the fetched pages."
+  },
+  "pages": {
+    "blocked_hint": {"content": "", "error": "source returned HTTP 403", "links": []},
+    "release": {
+      "content": "Novum Corporation Reports Second Quarter 2025 Results\nJuly 29, 2025\nNovum Corporation announced revenue and net income for the fiscal quarter ended June 30, 2025. Revenue increased compared with the prior year. Management discussed customer demand, operating expenses and investments in future products. These sentences are synthetic test content, not actual reported financial data. The complete results and company information are available from the investor relations website.",
+      "links": ["https://www.novum.example/about/company-info"]
+    },
+    "about": {
+      "content": "Novum Corporation company information. Read about our leadership and governance.",
+      "links": ["https://www.novum.example/about/leadership"]
+    },
+    "leadership": {
+      "content": "Novum Corporation leadership and governance. Investor Relations.",
+      "links": ["https://investor.awaybrand.example/home/default.aspx"]
+    },
+    "ir": {
+      "content": "Novum Corporation Investor Relations. Quarterly results and financial reports.",
+      "links": ["https://investor.awaybrand.example/results/2025-q2"]
+    }
+  }
+}

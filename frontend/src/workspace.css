@@ -1,0 +1,469 @@
+/* Shared application chrome and reading rhythm. Panels own their content layout. */
+.app-shell {
+  --chrome-height: 64px;
+}
+.app-shell .topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: var(--chrome-height);
+  padding: 0 24px;
+  background: var(--panel-deep);
+  backdrop-filter: none;
+}
+.app-shell .brand {
+  gap: 10px;
+}
+.app-shell .brand-mark {
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  border-color: var(--line-strong);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.app-shell .brand strong {
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+.app-shell .brand small {
+  font-size: 11px;
+  color: var(--faint);
+}
+.app-shell .topbar-stat {
+  font-size: 12px;
+  min-height: 36px;
+}
+.app-shell .live-pip.is-live,
+.app-shell .connection-connected .connection-dot {
+  box-shadow: none;
+}
+.app-shell .connection-pill {
+  border: 0;
+  padding: 6px 0;
+  font-size: 12px;
+}
+.app-shell .connection-pill.is-paused .connection-dot {
+  background: var(--amber);
+}
+.app-shell .app-body {
+  grid-template-columns: 222px minmax(0, 1fr) auto;
+  min-height: calc(100dvh - var(--chrome-height));
+}
+.app-shell .sidebar {
+  top: var(--chrome-height);
+  height: calc(100dvh - var(--chrome-height));
+  min-height: 0;
+  gap: 20px;
+  padding: 22px 14px 12px;
+  overflow-y: auto;
+  background: var(--panel-deep);
+}
+.app-shell .primary-nav,
+.app-shell .sidebar-secondary {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+}
+.navigation-label {
+  padding: 0 10px 7px;
+  color: var(--faint);
+  font-size: 12px;
+  font-weight: 500;
+}
+.app-shell .nav-item {
+  min-height: 35px;
+  padding: 6px 10px;
+  gap: 10px;
+  border: 0;
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.app-shell .nav-item .icon {
+  width: 16px;
+  height: 16px;
+}
+.app-shell .nav-item:hover {
+  background: var(--panel);
+  color: var(--ink);
+}
+.app-shell .nav-item.is-active {
+  background: var(--panel-soft);
+  color: var(--ink);
+  font-weight: 600;
+}
+.app-shell .nav-item.is-active .icon {
+  color: var(--green);
+}
+.app-shell .sidebar-bottom {
+  display: grid;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  gap: 6px;
+}
+.sidebar-utilities {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.app-shell .sidebar-utilities .nav-item {
+  padding: 6px 8px;
+  gap: 6px;
+  font-size: 12px;
+}
+.sidebar-refresh {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 6px 8px;
+  border: 0;
+  background: none;
+  color: var(--faint);
+  font-size: 12px;
+  text-align: left;
+}
+.sidebar-refresh:hover {
+  color: var(--ink);
+}
+.app-shell .navigation-toggle {
+  display: none;
+}
+.app-shell .main-content {
+  padding: 32px 36px 48px;
+  outline: none;
+  min-width: 0;
+}
+.app-shell .workspace-card,
+.app-shell .stack-form,
+.app-shell .stack-form label,
+.app-shell .form-grid {
+  min-width: 0;
+}
+.app-shell .stack-form :is(input, select, textarea) {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+.app-shell
+  .main-content
+  > :is(.research-page, .decision-workspace-page, .workspace-page, .command-bar) {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.app-shell .inspector {
+  top: var(--chrome-height);
+  height: calc(100dvh - var(--chrome-height));
+}
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 12px;
+  z-index: 200;
+  transform: translateY(-150%);
+  padding: 10px 16px;
+  border-radius: 4px;
+  background: var(--green-strong);
+  color: var(--panel-deep);
+  font-weight: 600;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+.app-shell :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+.app-shell .main-content:focus-visible {
+  outline: none;
+}
+::selection {
+  background: #b8d2c3;
+  color: #14221a;
+}
+input,
+textarea {
+  caret-color: var(--green);
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--faint);
+  opacity: 1;
+}
+input[type='checkbox'],
+input[type='radio'] {
+  accent-color: var(--green-strong);
+}
+.app-shell :is(.workspace-header, .decision-workspace-header, .office-heading) {
+  margin: 0 0 24px;
+  align-items: flex-start;
+}
+.app-shell :is(.workspace-header, .decision-workspace-header, .office-heading) h1,
+.app-shell .decision-detail-header h1 {
+  margin: 0 0 8px;
+  font-family: inherit;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+.app-shell :is(.workspace-header, .decision-workspace-header) p {
+  max-width: 70ch;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.app-shell
+  :is(
+    .workspace-header,
+    .section-heading,
+    .office-heading,
+    .decision-list-heading,
+    .decision-section-heading
+  )
+  > div
+  > .eyebrow {
+  display: none;
+}
+.app-shell .eyebrow,
+.app-shell .decision-kicker {
+  font-size: 12px;
+  letter-spacing: 0.015em;
+  font-weight: 500;
+}
+.app-shell :is(.muted-copy, .research-footnote, .decision-section-count) {
+  font-size: 12px;
+}
+.app-shell .button {
+  min-height: 38px;
+  padding: 8px 13px;
+  font-size: 13px;
+  border-radius: 5px;
+}
+.app-shell .button-primary {
+  font-weight: 600;
+  color: #14221a;
+}
+.app-shell .button:hover {
+  border-color: var(--green);
+}
+.app-shell .icon-button {
+  width: 34px;
+  height: 34px;
+}
+.app-shell .command-bar {
+  margin-bottom: 26px;
+  background: var(--bg-raised);
+  border-color: var(--line);
+  box-shadow: none;
+  border-radius: 6px;
+}
+.app-shell .command-form {
+  padding: 12px;
+  gap: 10px;
+}
+.app-shell .command-input {
+  padding: 0 4px 0 12px;
+  background: var(--panel-deep);
+  border-color: var(--line-strong);
+  border-radius: 4px;
+  min-height: 48px;
+}
+.app-shell .command-input input {
+  font-size: 14px;
+}
+.app-shell .command-submit {
+  display: flex;
+  gap: 9px;
+  width: auto;
+  min-height: 38px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 3px;
+}
+.command-options summary {
+  width: fit-content;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 2px;
+}
+.command-options[open] .command-controls {
+  padding-top: 10px;
+}
+.app-shell .command-controls label,
+.app-shell .command-controls select {
+  font-size: 12px;
+}
+.app-shell .decision-summary-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  border-block: 1px solid var(--line);
+  padding: 14px 0;
+}
+.app-shell .decision-summary-strip > div {
+  display: flex;
+  align-items: baseline;
+  min-height: 0;
+  gap: 7px;
+  padding: 0;
+  background: none;
+  border: 0;
+}
+.app-shell .decision-summary-strip strong {
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 600;
+}
+.app-shell .decision-summary-strip span {
+  font-size: 12px;
+}
+.app-shell .decision-card {
+  box-shadow: none;
+  border-radius: 6px;
+}
+.app-shell .decision-list-heading h2,
+.app-shell .decision-section-heading h2 {
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 600;
+}
+.app-shell .decision-list-heading .muted-copy {
+  max-width: 50ch;
+  text-align: right;
+}
+.app-shell .decision-paused-banner {
+  border-radius: 4px;
+}
+@media (max-width: 1100px) and (min-width: 901px) {
+  .app-shell .app-body {
+    grid-template-columns: 206px minmax(0, 1fr) auto;
+  }
+  .app-shell .main-content {
+    padding: 28px 24px 40px;
+  }
+}
+@media (max-width: 900px) {
+  .app-shell .two-column-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .app-shell .topbar {
+    padding: 0 16px;
+    gap: 10px;
+  }
+  .app-shell .topbar-stat {
+    display: none;
+  }
+  .app-shell .navigation-toggle {
+    display: inline-flex;
+    min-height: 40px;
+  }
+  .app-shell .app-body {
+    display: block;
+  }
+  .app-shell .sidebar {
+    display: none;
+  }
+  .app-shell .sidebar.is-open {
+    display: grid;
+    position: relative;
+    top: auto;
+    z-index: 20;
+    height: auto;
+    max-height: calc(100dvh - var(--chrome-height));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 24px;
+    padding: 20px 16px;
+    border-bottom: 1px solid var(--line);
+    border-right: 0;
+  }
+  .app-shell .sidebar .sidebar-secondary {
+    display: grid;
+    padding: 0;
+    border: 0;
+  }
+  .app-shell .sidebar-bottom {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .sidebar-utilities {
+    grid-template-columns: 1fr;
+  }
+  .app-shell .sidebar .nav-item {
+    min-height: 44px;
+    font-size: 14px;
+  }
+  .app-shell .sidebar-refresh {
+    min-height: 44px;
+  }
+  .app-shell .main-content {
+    padding: 24px 20px 40px;
+  }
+  .app-shell .inspector {
+    position: fixed;
+    top: var(--chrome-height);
+    width: min(390px, 96vw);
+  }
+  .app-shell .button,
+  .app-shell .icon-button {
+    min-height: 44px;
+  }
+  .app-shell .icon-button {
+    min-width: 44px;
+  }
+}
+@media (max-width: 520px) {
+  .app-shell .stack-form :is(input, select, textarea) {
+    font-size: 16px;
+  }
+  .app-shell .brand small {
+    display: none;
+  }
+  .app-shell .brand strong {
+    font-size: 13px;
+  }
+  .app-shell .brand-mark {
+    display: none;
+  }
+  .app-shell .topbar-actions {
+    gap: 10px;
+  }
+  .app-shell .connection-pill {
+    font-size: 11px;
+    gap: 5px;
+  }
+  .app-shell .main-content {
+    padding: 22px 16px 36px;
+  }
+  .app-shell :is(.workspace-header, .decision-workspace-header, .office-heading) h1 {
+    font-size: 24px;
+  }
+  .app-shell .command-input {
+    flex-wrap: wrap;
+    padding: 10px;
+    gap: 12px;
+  }
+  .app-shell .command-input input {
+    flex-basis: 100%;
+    font-size: 16px;
+  }
+  .app-shell .command-submit {
+    margin-left: auto;
+  }
+  .app-shell .decision-list-heading {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .app-shell .decision-list-heading .muted-copy {
+    text-align: left;
+  }
+}

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Public ResearchCouncil local investment research office specification">
+  <title>ResearchCouncil · Public product brief</title>
+  <style>
+    :root { color-scheme: light; --ink:#192e2b; --muted:#586963; --paper:#f5f3ed; --card:#fffefa; --line:#d9ded6; --green:#245c49; --gold:#ba9759; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.65 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    main { max-width:980px; margin:auto; padding:56px 24px 72px; }
+    h1,h2 { font-family:Georgia,serif; font-weight:400; letter-spacing:-.02em; }
+    h1 { font-size:clamp(42px,7vw,74px); line-height:1.05; margin:18px 0; }
+    h2 { border-top:1px solid var(--line); margin-top:44px; padding-top:28px; font-size:30px; }
+    .eyebrow { color:var(--green); font:12px ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.12em; text-transform:uppercase; }
+    .lead { max-width:760px; color:#445951; font-size:20px; }
+    .notice { border-left:3px solid var(--gold); background:#ede9dc; margin:24px 0; padding:14px 18px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; }
+    .card { background:var(--card); border:1px solid var(--line); padding:18px; }
+    .card h3 { margin:0 0 8px; font-size:16px; }
+    .small { color:var(--muted); font-size:13px; }
+    code { background:#e8ede5; padding:2px 4px; }
+    a { color:var(--green); }
+  </style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">ResearchCouncil · Public product brief</div>
+  <h1>A research firm you can enter.</h1>
+  <p class="lead">ResearchCouncil is a local-first investment research workspace with a clickable 3D office, durable evidence-backed memory, switchable model adapters, bounded scenario analysis, and paper-only decision records.</p>
+  <p class="notice"><strong>Public source note:</strong> This page is the sanitized shareable brief. Private working notes and personal portfolio observations are intentionally excluded.</p>
+
+  <h2>Product goals</h2>
+  <div class="grid">
+    <section class="card"><h3>Local and durable</h3><p>Run a React frontend and FastAPI backend on loopback. Persist records in SQLite and retain imported evidence with dates, hashes, and source locators.</p></section>
+    <section class="card"><h3>GPT first</h3><p>Use the authenticated Codex CLI through an existing ChatGPT subscription. Keep API-key routes and automatic local-model downloads disabled by default.</p></section>
+    <section class="card"><h3>Evidence before claims</h3><p>Keep sourced facts, calculations, model judgments, decisions, and simulations distinguishable. Missing or ambiguous data produces an explicit review or defer state.</p></section>
+    <section class="card"><h3>Paper decisions</h3><p>Research may lead to recommendations and monitoring conditions. The application never places orders or mutates an executed transaction ledger.</p></section>
+  </div>
+
+  <h2>The office</h2>
+  <p>The primary interface is a question journal with Results, Reddit and Watchlist views. Each card retains the original question or post title and opens its current decision, evidence, calculations and history. The optional office groups current work under Chief of Staff, Researcher and CIO, with selectable records and accessible controls. Earlier role records remain readable.</p>
+
+  <h2>Research workflow</h2>
+  <p>The Chief of Staff understands an open question or screens a Reddit post. The Researcher discovers public sources and assesses archived evidence alongside local technical indicators and price scenarios. One material public evidence gap can receive a bounded continuation in the same case. The CIO records Recommend with a supported entry and calculated shares, Watchlist with an observable price or catalyst condition, or Decline with reasoning. Missing inputs and execution failures remain separate from investment judgment. Events, source versions and prior decisions are retained so users can inspect where the flow stopped.</p>
+
+  <h2>Memory and namespaces</h2>
+  <p>SQLite stores accounts, observations, transactions, positions, source versions, research, decisions, model history, tasks, events, and simulations. The interface presents one research workspace. Test and simulation records remain separately scoped internally. Imported account observations remain unconfirmed until reconciled; unknown values are represented as unknown with a reason.</p>
+
+  <h2>Optional data and models</h2>
+  <p>Text, Markdown, CSV, and supported filing imports provide the dependable baseline. SEC retrieval is allowlisted and rate-limited. Optional quotes, options, local models, and schedules report their availability and freshness; unavailable inputs do not become invented claims. No third-party notifications or cloud database is required.</p>
+
+  <h2>Open local operations</h2>
+  <p>Install with <code>./install.command</code> and start with <code>./start.command</code>. The server is available at <code>http://127.0.0.1:8000</code>. Private SQLite plus evidence backups and JSON/Markdown exports are provided in <code>scripts/</code>. GitHub Actions checks the build without publishing the application.</p>
+
+  <p class="small">ResearchCouncil is research and educational software. Its records are not financial, legal, or tax advice.</p>
+</main>
+</body>
+</html>

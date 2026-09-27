@@ -127,6 +127,25 @@ const detailProps = {
   onSelect: () => assert.fail('Rendering must not select or fetch a note'), onRetry: () => assert.fail('Rendering must not retry automatically'),
 }
 
+test('memory keeps calendar-only dates on their stated day while timestamps retain local time', () => {
+  const previousZone = process.env.TZ
+  process.env.TZ = 'America/Toronto'
+  try {
+    const statusFor = updated_at => {
+      const note = { ...makeNode('dated-note'), updated_at, markdown: 'Dated evidence.', frontmatter: {}, links: [] }
+      const { tree } = render(MemoryDetail, { ...detailProps, note })
+      return textOf(elements(tree, element => element.props.className === 'memory-note-status')[0])
+    }
+    const calendarLabel = new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(2026, 8, 26, 12))
+    assert.equal(statusFor('2026-09-26'), `recorded · ${calendarLabel}`, 'A calendar date must not move to September 25 or acquire a time')
+    const timestampLabel = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date('2026-09-26T00:00:00Z'))
+    assert.equal(statusFor('2026-09-26T00:00:00Z'), `recorded · ${timestampLabel}`, 'An actual UTC timestamp still displays its Toronto date and time')
+  } finally {
+    if (previousZone === undefined) delete process.env.TZ
+    else process.env.TZ = previousZone
+  }
+})
+
 test('the accessible note list preserves the selected note and opens the exact requested identity', () => {
   const selected = []
   const { html, tree } = render(MemoryNoteList, { nodes, selectedId: 'filing', onSelect: id => selected.push(id) })

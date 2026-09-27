@@ -1,6 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { apiFetch } from '../api'
 import { Icon } from '../components/Icon'
+import { formatCalendarDate } from '../date'
 import type { Namespace } from '../types'
 import { linkedMemoryNodes, memoryBody, memoryGraphQuery, memoryKind, safeMemoryUrl, type SharedMemoryGraph, type SharedMemoryNote, type SharedMemoryNode } from './memoryGraphModel'
 import type { MemoryCameraAction } from './MemoryGraph3D'
@@ -10,6 +11,7 @@ const MemoryGraph3D = lazy(() => import('./MemoryGraph3D'))
 
 function dateLabel(value: string | null) {
   if (!value) return 'Date unavailable'
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return formatCalendarDate(value)
   const date = new Date(value)
   return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(date)
 }

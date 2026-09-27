@@ -11,6 +11,12 @@ import re
 # The source privacy gate runs separately. This guard additionally prevents a
 # local-app build, source maps, arbitrary exports or backend files being uploaded.
 _LOCAL_RUNTIME = re.compile(r"(?:/api/(?:office|runs|events|memory/sync)|new\s+EventSource\s*\()")
+# These are labels from the retired synthetic valuation, not mathematical
+# functions: the public memory visualization legitimately uses trigonometry.
+_LEGACY_SYNTHETIC_CONTENT = re.compile(
+    r"fictional exampleco|generated sample values|all 60 points are synthetic",
+    re.IGNORECASE,
+)
 
 
 def check_artifact(root: Path) -> list[str]:
@@ -33,9 +39,11 @@ def check_artifact(root: Path) -> list[str]:
             scripts.append(code)
             if _LOCAL_RUNTIME.search(code):
                 errors.append(f"Local research runtime found in public script: {rel}")
+            if _LEGACY_SYNTHETIC_CONTENT.search(code):
+                errors.append(f"Legacy synthetic valuation found in public script: {rel}")
     if not (root / 'index.html').is_file():
         errors.append('Demo index.html is missing')
-    if not any('Public demo' in code and 'ExampleCo' in code for code in scripts):
+    if not any('Public demo' in code and 'META' in code for code in scripts):
         errors.append('Authored public demo entry was not found')
     try:
         snapshot = json.loads((root / 'market-news.json').read_text(encoding='utf-8'))

@@ -14,29 +14,8 @@ const bundle = await build({
 })
 const compiled = { exports: {} }
 new Function('require', 'module', 'exports', bundle.outputFiles[0].text)(require, compiled, compiled.exports)
-const { demoPrice, capex, demoNotes, demoGraph, questions, illustrativeHistory, latestFinancials, DEMO_AS_OF, EARNINGS_REPORTED_AT, EARNINGS_PERIOD_END, MUSE_RELEASED_AT, MUSE_RELEASE } = compiled.exports
+const { capex, demoNotes, demoGraph, questions, latestFinancials, DEMO_AS_OF, EARNINGS_REPORTED_AT, EARNINGS_PERIOD_END, MUSE_RELEASED_AT, MUSE_RELEASE } = compiled.exports
 const close = (actual, expected) => assert.ok(Math.abs(actual - expected) < 0.000001, `${actual} does not match independently calculated ${expected}`)
-
-test('12 months means one growth period, while today applies none', () => {
-  // ExampleCo EPS of $4.80 at 22× is $105.60 today. With 10% growth,
-  // next-year EPS is $5.28; the year after that is $5.808.
-  close(demoPrice('P/E', 10, 22, 0), 105.6)
-  close(demoPrice('P/E', 10, 22, 12), 116.16)
-  close(demoPrice('P/E', 10, 22, 24), 127.776)
-  close(demoPrice('P/E', -20, 22, 12), 84.48)
-})
-
-test('revenue, enterprise value and equity NAV produce distinct per-share prices', () => {
-  // Independent monetary reconciliation of the authored ExampleCo inputs.
-  // $329.28bn equity / 1.86bn shares; $324.80bn equity after EV bridge;
-  // $188.945bn equity NAV after the 1.15× assumption.
-  close(demoPrice('P/S', 0, 2.4), 177.03225806451613)
-  close(demoPrice('EV/EBITDA', 0, 11), 174.6236559139785)
-  close(demoPrice('P/NAV', 0, 1.15), 101.58333333333333)
-  // A 10% EBITDA increase adds $31.46bn of enterprise value. The existing
-  // cash/debt/other-claims bridge is unchanged and must not grow a second time.
-  close(demoPrice('EV/EBITDA', 10, 11, 12), 191.53763440860217)
-})
 
 test('every actual capex bar and factual research question links to issuer material', () => {
   assert.equal(capex.frequency, 'quarterly')
@@ -52,23 +31,11 @@ test('every actual capex bar and factual research question links to issuer mater
     assert.match(point.source_method, /issuer/)
   }
   for (const question of questions.filter(question => question.source)) {
-    assert.ok(['investor.atmeta.com', 's21.q4cdn.com', 'about.fb.com'].includes(new URL(question.source).hostname))
+    assert.ok(['investor.atmeta.com', 's21.q4cdn.com', 'about.fb.com', 'stockanalysis.com'].includes(new URL(question.source).hostname))
   }
 })
 
-test('generated multiple history is explicitly fictional and does not relabel book equity as NAV', () => {
-  const histories = illustrativeHistory().historical_multiples
-  assert.deepEqual(Object.keys(histories), ['P/E', 'P/S', 'EV/EBITDA', 'P/book'])
-  for (const history of Object.values(histories)) {
-    assert.match(history.basis, /FICTIONAL EXAMPLECO/)
-    assert.match(history.basis, /Not Meta trading history/)
-    assert.match(history.coverage_note, /synthetic/)
-    assert.equal(history.points.length, 60)
-    assert.ok(history.points.every(point => Number.isFinite(point.multiple)))
-  }
-})
-
-test('public notebook links stay inside its authored demo graph and issuer sources', () => {
+test('public notebook links stay inside its sourced META graph and cited sources', () => {
   const ids = new Set(demoNotes.map(note => note.id))
   assert.equal(ids.size, demoNotes.length)
   assert.equal(demoGraph.total_nodes, demoNotes.length)
@@ -76,13 +43,13 @@ test('public notebook links stay inside its authored demo graph and issuer sourc
     assert.equal(note.frontmatter.namespace, 'demo')
     assert.match(note.path, /^demo\//)
     assert.ok(note.links.every(link => ids.has(link.target)))
-    if (note.source_url) assert.ok(['investor.atmeta.com', 's21.q4cdn.com', 'about.fb.com'].includes(new URL(note.source_url).hostname))
+    if (note.source_url) assert.ok(['investor.atmeta.com', 's21.q4cdn.com', 'about.fb.com', 'stockanalysis.com'].includes(new URL(note.source_url).hostname))
   }
   for (const edge of demoGraph.edges) {
     assert.ok(ids.has(edge.source))
     assert.ok(ids.has(edge.target))
   }
-  assert.equal(Object.keys(bundle.metafile.inputs).length, 1, 'Authored public data has no runtime source/ledger imports')
+  assert.ok(Object.keys(bundle.metafile.inputs).every(path => /(?:demoData|metaEarningsCall|metaValuation)\.ts$/.test(path)), 'Public data depends only on explicitly authored, source-bound modules')
 })
 
 test('public entry build excludes the local workspace, event stream and private data paths', async () => {
@@ -155,5 +122,8 @@ test('rendered earnings and Muse cards distinguish actuals, guidance and interpr
   assert.match(html, /Review the five questions/)
   const home = renderToStaticMarkup(React.createElement(module.exports.default))
   assert.match(home, /Data checked September 26, 2026/)
+  assert.doesNotMatch(html + home, /ExampleCo|Generated sample values|Fictional allocation|Illustrative intake/)
+  assert.match(html, /META earnings call analysis/)
+  assert.match(html, /Speaker context and original wording/)
   assert.doesNotMatch(home, /Historical example|October 29, 2025/)
 })

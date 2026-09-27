@@ -8,7 +8,8 @@ It never places trades. The optional 3D office loads only when opened.
 
 Explore the [public browser demo](https://johnson-lee-v0.github.io/Equity-Research/)
 to try the earnings walkthrough, pricing controls and 3D memory without installing
-anything. It uses attributed public facts and clearly labeled fictional examples.
+anything. It follows a sourced META case with actual call analysis, reported
+financials, dated market figures and explicit valuation assumptions.
 The agent loop and personal research remain local; see the
 [public demo guide](docs/public-demo.md) for the build and deployment boundary.
 

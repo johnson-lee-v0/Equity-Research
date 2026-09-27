@@ -68,8 +68,10 @@ An actual P/NAV valuation still requires a dated issuer-reported or appraised
 NAV with a clearly stated asset/claim basis. Free ratio sites do not supply that
 missing appraisal. Provider access follows its
 [terms](https://stockanalysis.com/terms-of-use/) and
-[robots policy](https://stockanalysis.com/robots.txt); public demos use synthetic
-series rather than republishing complete provider tables.
+[robots policy](https://stockanalysis.com/robots.txt); the public META case uses five attributed year-end observations per metric,
+not a complete provider table or generated monthly history. Annual sampling is
+labeled explicitly and missing years remain gaps; the mean and deviation bands
+describe available year-end samples. See [public demo](public-demo.md).
 
 Focused verification: `test_secondary_valuation_history.py` checks vintage and
 identity rejection, alignment, missing values, robots denial, reuse, namespace

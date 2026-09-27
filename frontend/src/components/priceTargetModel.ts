@@ -181,7 +181,7 @@ export function targetTodayCalculation(context: ValuationResearchContext | null,
   return `Reported EPS ${contextNumberLabel(eps)} × P/E ${Number(multiple).toLocaleString(undefined, { maximumFractionDigits: 2 })} = ${targetPrice(price, today.currency)}`
 }
 
-export function historicalPeSegments(points: NonNullable<ValuationResearchContext['historical_pe']>['points'], sampling: 'monthly' | 'quarterly' = 'monthly') {
+export function historicalPeSegments(points: NonNullable<ValuationResearchContext['historical_pe']>['points'], sampling: 'monthly' | 'quarterly' | 'annual' = 'monthly') {
   const segments: Array<Array<{ date: string; value: number; index: number }>> = []
   let segment: Array<{ date: string; value: number; index: number }> = []
   for (const [index, point] of (points ?? []).entries()) {
@@ -195,7 +195,7 @@ export function historicalPeSegments(points: NonNullable<ValuationResearchContex
         const prior = new Date(priorDate)
         const next = new Date(point.date)
         const months = (next.getUTCFullYear() - prior.getUTCFullYear()) * 12 + next.getUTCMonth() - prior.getUTCMonth()
-        if (months > (sampling === 'quarterly' ? 3 : 1)) { segments.push(segment); segment = [] }
+        if (months > (sampling === 'annual' ? 12 : sampling === 'quarterly' ? 3 : 1)) { segments.push(segment); segment = [] }
       }
       segment.push({ date: point.date, value, index })
     }

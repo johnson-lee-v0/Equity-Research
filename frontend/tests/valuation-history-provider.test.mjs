@@ -38,6 +38,23 @@ test('available primary history stays separate from provider values and bands', 
   assert.doesNotMatch(html, /7.50×|8.10×|Provider comparison/)
 })
 
+test('five annual provider samples are labeled as year-ends, not monthly or quarterly trading history', () => {
+  const annual = {
+    ...provider, sampling: 'annual', source_url: 'https://stockanalysis.com/stocks/abc/financials/ratios/',
+    basis: 'Provider-computed fiscal year-end ratios.', min: 20, max: 28,
+    points: [20, 22, 24, 26, 28].map((multiple, index) => ({ date: `${2021 + index}-12-31`, multiple, period_label: `FY${2021 + index}` })),
+  }
+  const html = render({ provider_multiples: { 'P/S': annual } })
+  assert.match(html, /5 year-end observations/)
+  assert.match(html, /Five-year annual sample average<\/dt><dd>24\.00×/)
+  assert.match(html, /Each observed year-end has equal weight; this is not a daily trading average/)
+  assert.doesNotMatch(html, /quarter-end observations|monthly observations|latest snapshot|60 observations/)
+  assert.equal((html.match(/<polyline /g) || []).length, 1)
+  assert.equal((html.match(/class="price-target-pe-point"/g) || []).length, 5)
+  for (const label of ['+1 SD', '+2 SD', '+3 SD', '−1 SD', '−2 SD', '−3 SD']) assert.ok(html.includes(label))
+  assert.match(html, /https:\/\/stockanalysis\.com\/stocks\/abc\/financials\/ratios\//)
+})
+
 test('manual refresh is offered only for a valid ticker in the real workspace', () => {
   const context = { provider_multiples: { 'P/S': provider } }
   assert.match(render(context, { namespace: 'real', ticker: 'ABC' }), /Update multiple history/)

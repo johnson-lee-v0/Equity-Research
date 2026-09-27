@@ -90,7 +90,9 @@ function HistoricalPe({ history, sourceLinks, prose, asOf }: { history: NonNulla
   const providerUrl = targetSourceUrl(history.source_url)
   const stats = historicalMultipleStats(history.points ?? [], provider ? history.as_of : asOf)
   const points = stats.points as NonNullable<ResearchContext['historical_pe']>['points'] & object[]
-  const segments = historicalPeSegments(points, history.sampling === 'quarterly' ? 'quarterly' : 'monthly')
+  const sampling = history.sampling === 'annual' ? 'annual' : history.sampling === 'quarterly' ? 'quarterly' : 'monthly'
+  const segments = historicalPeSegments(points, sampling)
+  const observationLabel = sampling === 'annual' ? 'year-end observations' : sampling === 'quarterly' ? provider ? 'quarter-end observations and latest snapshot' : 'quarter-end observations' : 'monthly observations'
   const valid = segments.flat()
   const width = 610
   const height = 210
@@ -111,17 +113,17 @@ function HistoricalPe({ history, sourceLinks, prose, asOf }: { history: NonNulla
     {history.basis && <p className="price-target-note">{prose(history.basis)}</p>}
     {provider && <p className="price-target-note"><strong>Provider comparison</strong> · {providerUrl ? <a href={providerUrl} target="_blank" rel="noreferrer">{history.provider || 'Source'} ↗</a> : history.provider}{history.as_of && ` · Retrieved ${history.as_of.slice(0, 10)}`}. Shown for comparison; the saved decision and target are unchanged.</p>}
     {valid.length > 0 && <>
-      <dl className="price-target-context-stats"><div><dt>Sampled low</dt><dd>{multiple(history.min)}</dd></div><div><dt>Five-year sample average</dt><dd>{multiple(stats.mean)}</dd></div><div><dt>Standard deviation</dt><dd>{multiple(stats.deviation)}</dd></div><div><dt>Sampled high</dt><dd>{multiple(history.max)}</dd></div></dl>
+      <dl className="price-target-context-stats"><div><dt>Sampled low</dt><dd>{multiple(history.min)}</dd></div><div><dt>{sampling === 'annual' ? 'Five-year annual sample average' : 'Five-year sample average'}</dt><dd>{multiple(stats.mean)}</dd></div><div><dt>Standard deviation</dt><dd>{multiple(stats.deviation)}</dd></div><div><dt>Sampled high</dt><dd>{multiple(history.max)}</dd></div></dl>
       <div className="price-target-chart-wrap"><svg className="price-target-pe-chart" viewBox={`0 0 ${width} ${height}`} role="img" aria-labelledby={`${id}-title ${id}-desc`}>
         <title id={`${id}-title`}>{`Historical ${metric} multiple`}</title>
-        <desc id={`${id}-desc`}>{valid.length} dated observations{valid.length ? ` from ${valid[0].date} to ${valid[valid.length - 1].date}` : ''}. Missing observations break the line. Values and their sources are listed below.</desc>
+        <desc id={`${id}-desc`}>{valid.length} {sampling === 'annual' ? 'year-end' : 'dated'} observations{valid.length ? ` from ${valid[0].date} to ${valid[valid.length - 1].date}` : ''}. Missing observations break the line. Values and their sources are listed below.</desc>
         {[minimum, (minimum + maximum) / 2, maximum].map((value) => <g key={value}><line x1={left} x2={right} y1={y(value)} y2={y(value)} className="price-target-chart-axis" /><text x={left - 7} y={y(value) + 4} textAnchor="end" className="price-target-chart-tick">{value.toFixed(1)}×</text></g>)}
         {stats.bands.map((band) => <g key={band.sigma}><line x1={left} x2={right} y1={y(band.value)} y2={y(band.value)} className={`price-target-sigma-line is-sigma-${Math.abs(band.sigma)}`} /><text x={right + 7} y={y(band.value) + 3} className="price-target-sigma-label">{band.sigma === 0 ? 'Average' : `${band.sigma > 0 ? '+' : '−'}${Math.abs(band.sigma)} SD`}</text></g>)}
         {segments.map((segment, index) => <polyline key={index} points={segment.map((point) => `${x(point.date)},${y(point.value)}`).join(' ')} className="price-target-pe-line" />)}
         {valid.map((point) => <circle key={`${point.date}-${point.index}`} cx={x(point.date)} cy={y(point.value)} r={2.4} className="price-target-pe-point"><title>{`${point.date}: ${contextNumberLabel(point.value)}× ${metric}`}</title></circle>)}
         {ticks.map((index) => <text key={index} x={x(datedPoints[index].date)} y={bottom + 23} textAnchor={index === 0 ? 'start' : index === datedPoints.length - 1 ? 'end' : 'middle'} className="price-target-chart-tick">{shortDate(datedPoints[index].date)}</text>)}
       </svg></div>
-      <p className="price-target-note">{valid.length} {provider ? 'quarter-end observations and latest snapshot' : 'monthly observations'}{valid.length ? ` · ${valid[0].date} to ${valid[valid.length - 1].date}` : ''}. Average and ±1, ±2, ±3 standard deviations use the available samples in the last five years; missing periods are excluded. Bands describe historical variation, not a price prediction.</p>
+      <p className="price-target-note">{valid.length} {observationLabel}{valid.length ? ` · ${valid[0].date} to ${valid[valid.length - 1].date}` : ''}. Average and ±1, ±2, ±3 standard deviations use the available samples in the last five years; missing periods are excluded. {sampling === 'annual' && 'Each observed year-end has equal weight; this is not a daily trading average. '}Bands describe historical variation, not a price prediction.</p>
       {!provider && <p className="price-target-note">Historical {metric} uses financials already reported at each observation date. A target multiple applied to a forecast uses a different basis.</p>}
     </>}
     {history.coverage_note && (provider ? <details><summary>How these numbers were sourced</summary><p className="price-target-note">{prose(history.coverage_note)}</p></details> : <p className="price-target-note">{prose(history.coverage_note)}</p>)}

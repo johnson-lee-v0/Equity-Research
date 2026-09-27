@@ -225,3 +225,23 @@ test('quarterly provider history connects consecutive quarters but leaves missin
   assert.deepEqual(historicalPeSegments(points, 'quarterly').map(row => row.length), [2, 1])
   assert.deepEqual(historicalPeSegments(points).map(row => row.length), [1, 1, 1])
 })
+
+test('annual provider history connects adjacent year-ends but never fills a missing year', () => {
+  const points = [{ date: '2021-12-31', pe: 20 }, { date: '2022-12-31', pe: 22 }, { date: '2024-12-31', pe: 26 }, { date: '2025-12-31', pe: 28 }]
+  assert.deepEqual(historicalPeSegments(points, 'annual').map(row => row.map(point => point.date)), [
+    ['2021-12-31', '2022-12-31'], ['2024-12-31', '2025-12-31'],
+  ])
+  assert.deepEqual(historicalPeSegments(points, 'quarterly').map(row => row.length), [1, 1, 1, 1])
+  assert.deepEqual(historicalPeSegments(points).map(row => row.length), [1, 1, 1, 1])
+})
+
+test('five annual samples receive equal weight in the five-year average and deviation bands', () => {
+  const points = [20, 22, 24, 26, 28].map((pe, index) => ({ date: `${2021 + index}-12-31`, pe }))
+  const stats = historicalMultipleStats([{ date: '2020-12-31', pe: 1000 }, ...points], '2026-09-26')
+  assert.equal(stats.points.length, 5)
+  assert.equal(stats.mean, 24)
+  assert.equal(stats.deviation, Math.sqrt(8))
+  assert.deepEqual(stats.bands.map(band => band.sigma), [-3, -2, -1, 0, 1, 2, 3])
+  assert.ok(stats.minimum > 0)
+  assert.ok(stats.minimum < stats.bands[0].value && stats.maximum > stats.bands[6].value)
+})

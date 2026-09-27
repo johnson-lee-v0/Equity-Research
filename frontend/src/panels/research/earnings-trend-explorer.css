@@ -1,0 +1,13 @@
+.earnings-trend-explorer { margin: 18px 0 24px; min-width: 0; }
+.earnings-explorer-heading h3 { margin: 0; color: var(--ink); font-size: 1rem; }
+.earnings-explorer-heading p { max-width: 82ch; margin: 8px 0 14px; color: var(--muted); font-size: .82rem; line-height: 1.65; }
+.earnings-category-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.earnings-category-controls button { display: grid; gap: 3px; min-height: 48px; padding: 10px 14px; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--panel); color: var(--ink); font: inherit; font-size: .82rem; text-align: left; cursor: pointer; }
+.earnings-category-controls button small { color: var(--muted); font-size: .7rem; }
+.earnings-category-controls button[aria-pressed='true'] { border-color: var(--green); box-shadow: inset 0 -3px var(--green); background: var(--panel-deep); }
+.earnings-category-controls button:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+.earnings-category-content { min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 7px; background: var(--panel); }
+.earnings-category-content > h4 { margin: 0 0 14px; color: var(--ink); font-size: .92rem; }
+.earnings-trend-explorer .earnings-trends-gaps { margin-top: 14px; color: var(--muted); font-size: .8rem; line-height: 1.6; }
+.earnings-trend-explorer summary { cursor: pointer; }
+@media (max-width: 560px) { .earnings-category-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); } .earnings-category-content { padding: 12px; } }

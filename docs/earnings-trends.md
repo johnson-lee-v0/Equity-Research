@@ -148,9 +148,16 @@ called a revision when the forecast amount is unchanged.
 
 ## Reader and saved reviews
 
-The former “For your thesis” column is replaced with a Trend column. Metric
-selectors keep different definitions separate, bar labels show the numbers, and
-Values & sources exposes the evidence table. Charts include a zero baseline,
+The former “For your thesis” column is replaced by a shared trend explorer.
+Growth, margins, earnings/cash and CapEx/guidance categories retain every supplied
+series; unfamiliar saved measures remain under Other saved figures. This is a
+read-only presentation layer, not an expansion of the live collector’s supported
+metric contract. Metric selectors keep different definitions separate, bar labels
+show the numbers, and Values & sources exposes the evidence table. Source-bound
+notes remain visible for actuals as well as forecasts, including unusual tax items
+and accounting-basis differences. Named numerical calculation inputs and their
+retained source links are inspectable. An incomplete year’s review cutoff is
+labeled “Unreported as of,” never as an actual-result publication date. Charts include a zero baseline,
 retain negative values and provide accessible descriptions. The complete call,
 question/answer navigation and exact source jumps remain available.
 

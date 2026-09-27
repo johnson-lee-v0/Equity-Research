@@ -30,6 +30,7 @@ jobs:
       - name: Check out public source
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Set up Python for the public RSS reader
@@ -61,7 +62,7 @@ jobs:
         run: pnpm --dir frontend install --frozen-lockfile
 
       - name: Verify public examples and isolation
-        run: node --test frontend/tests/public-demo.test.mjs frontend/tests/market-news.test.mjs
+        run: node --test frontend/tests/public-demo.test.mjs frontend/tests/public-earnings-call.test.mjs frontend/tests/meta-trends.test.mjs frontend/tests/meta-valuation.test.mjs frontend/tests/market-news.test.mjs
 
       - name: Build only the public demo
         run: pnpm --dir frontend run build:demo

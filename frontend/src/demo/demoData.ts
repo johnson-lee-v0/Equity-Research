@@ -1,4 +1,4 @@
-import type { EarningsTrendSeries } from '../panels/research/earningsTrendModel'
+import { metaTrendSeries } from './metaTrends'
 import type { SharedMemoryGraph, SharedMemoryNote } from '../panels/memoryGraphModel'
 import { META_CALL_TRANSCRIPT } from './metaEarningsCall'
 import { metaMarket, metaScenarios, metaEntry } from './metaValuation'
@@ -21,14 +21,7 @@ export const latestFinancials = {
   operatingCashFlow: 31.862, freeCashFlow: 0.784,
   yearToDateCapex: 50.918, annualCapexGuidance: [130, 145],
 } as const
-export const capex: EarningsTrendSeries = {
-  id: 'quarterly_capex', label: 'Quarterly capital expenditure', unit: 'USD billions', frequency: 'quarterly',
-  area_ids: ['capital'], basis: 'Meta reported capital expenditure including finance-lease principal. Each bar is one quarter, not year to date.',
-  points: [['Q1 FY2025', 13.692], ['Q2 FY2025', 17.012], ['Q3 FY2025', 19.374], ['Q4 FY2025', 22.137], ['Q1 FY2026', 19.840], ['Q2 FY2026', 31.078]].map(([period, value]) => ({
-    period: String(period), value: Number(value), kind: 'actual', url: `${META_SLIDES}#page=15`, title: 'Meta Q2 2026 earnings presentation, pages 9 and 15',
-    published_at: EARNINGS_REPORTED_AT, source_method: 'issuer_earnings_presentation',
-  })),
-}
+export const capex = metaTrendSeries.find(series => series.id === 'capex_quarterly')!
 export const museThesis = {
   positive: 'Paid, repeat use could add revenue and make the infrastructure investment more productive.',
   opposing: 'Heavy usage could cost more to serve than users will pay; popularity alone does not prove profit.',

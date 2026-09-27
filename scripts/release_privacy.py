@@ -1003,7 +1003,7 @@ def scan_git_history(
     markers: PrivateMarkers,
     hits: Dict[Tuple[str, str], int],
 ) -> int:
-    """Scan reachable heads/tags/remotes and the current index only.
+    """Scan reachable publication objects and the exact staged index blobs.
 
     Codex checkpoint refs and unreachable loose objects can be very large and
     are not part of a normal publication history, so they are intentionally
@@ -1033,12 +1033,10 @@ def scan_git_history(
             _record_hit(hits, ".git", "git_history_unreadable")
     object_names: Dict[str, List[str]] = {}
     for line in object_lines:
-        pieces = line.split(" ", 1)
-        if len(pieces) != 2:
-            continue
-        oid, name = pieces
-        normalized_name = _normal_manifest_path(name) or name
-        object_names.setdefault(oid, []).append(normalized_name)
+        oid, _, name = line.partition(" ")
+        names = object_names.setdefault(oid, [])
+        if name:
+            names.append(_normal_manifest_path(name) or name)
     for oid, names in object_names.items():
         for normalized_name in names:
             category = path_policy_category(normalized_name)
@@ -1051,10 +1049,14 @@ def scan_git_history(
                 capture_output=True,
                 text=True,
             )
-            if type_result.returncode != 0 or type_result.stdout.strip() != "blob":
+            if type_result.returncode != 0:
+                _record_hit(hits, ".git", "git_history_unreadable")
+                continue
+            object_type = type_result.stdout.strip()
+            if object_type not in {"blob", "commit", "tag"}:
                 continue
             blob_result = subprocess.run(
-                ["git", "-C", str(git_root), "cat-file", "blob", oid],
+                ["git", "-C", str(git_root), "cat-file", object_type, oid],
                 check=False,
                 capture_output=True,
             )
@@ -1062,37 +1064,64 @@ def scan_git_history(
             _record_hit(hits, ".git", "git_history_unreadable")
             break
         if blob_result.returncode == 0:
-            for normalized_name in names:
-                _scan_content(blob_result.stdout, "git:" + normalized_name, markers, hits)
-                scanned += 1
+            if object_type in {"commit", "tag"}:
+                # Author/tagger identities and messages are public too. Only
+                # object IDs, never subjects or matched text, reach the report.
+                _scan_content(blob_result.stdout, f"git:{object_type}:{oid}", markers, hits)
+            else:
+                for normalized_name in names:
+                    _scan_content(blob_result.stdout, "git:" + normalized_name, markers, hits)
+                    scanned += 1
+        else:
+            _record_hit(hits, ".git", "git_history_unreadable")
 
     # The index may include a private file that has not reached a commit yet.
     try:
         index_result = subprocess.run(
-            ["git", "-C", str(git_root), "ls-files", "-z"],
+            ["git", "-C", str(git_root), "ls-files", "--stage", "-z"],
             check=False,
             capture_output=True,
         )
     except OSError:
         index_result = None
     if index_result is not None and index_result.returncode == 0:
-        for raw_name in index_result.stdout.split(b"\0"):
-            if not raw_name:
+        for entry in index_result.stdout.split(b"\0"):
+            if not entry:
                 continue
+            metadata, separator, raw_name = entry.partition(b"\t")
+            fields = metadata.split()
+            if not separator or len(fields) != 3:
+                _record_hit(hits, ".git", "git_index_unreadable")
+                continue
+            mode, raw_oid, stage = fields
             name = raw_name.decode("utf-8", errors="replace")
             normalized_name = _normal_manifest_path(name) or name
+            display_path = "git:index:" + normalized_name
             category = path_policy_category(normalized_name)
             if category:
-                _record_hit(hits, "git:index:" + normalized_name, category)
-            path = None
-            if _normal_manifest_path(name) is not None:
-                path = git_root / Path(*PurePosixPath(normalized_name).parts)
-            if path is not None and path.is_file() and not path.is_symlink():
-                try:
-                    _scan_content(path.read_bytes(), "git:index:" + normalized_name, markers, hits)
-                    scanned += 1
-                except OSError:
-                    _record_hit(hits, "git:index:" + normalized_name, "file_unreadable")
+                _record_hit(hits, display_path, category)
+            if stage != b"0":
+                _record_hit(hits, display_path, "git_index_unmerged")
+            # A staged gitlink is a commit in a different repository, outside
+            # this source gate's content boundary. Never silently accept it.
+            if mode == b"160000":
+                _record_hit(hits, display_path, "git_index_gitlink")
+                continue
+            try:
+                staged = subprocess.run(
+                    ["git", "-C", str(git_root), "cat-file", "blob", raw_oid.decode("ascii")],
+                    check=False, capture_output=True,
+                )
+            except (OSError, UnicodeDecodeError):
+                _record_hit(hits, display_path, "git_index_unreadable")
+                continue
+            if staged.returncode == 0:
+                _scan_content(staged.stdout, display_path, markers, hits)
+                scanned += 1
+            else:
+                _record_hit(hits, display_path, "git_index_unreadable")
+    else:
+        _record_hit(hits, ".git", "git_index_unreadable")
     return scanned
 
 

@@ -26,6 +26,46 @@ The separate **Question & answer** and **Management remarks** blocks containing
 the original words start collapsed. Select their headings to expand the speaker
 context and transcript links; plain-language main points remain visible.
 
+The local reader starts with an overview of **every saved business theme**. Each
+card previews one retained interpretation and shows the number of discussions;
+opening it keeps all questions, management replies, qualifications and matched
+passages available. The detailed cards use **Asked**, **Answered**, and **Still
+unclear / Answer coverage**. Coverage comes from the saved explanation, not a
+new judgment that a claim is true. Explanations from another source hash are not
+reused. If no explanation was saved, the original wording stays available in a
+closed disclosure instead of generating a new summary on read.
+
+Preview selection favors saved question-and-answer discussions whose exact
+source passages match the theme, rather than whichever exchange came first.
+For multipart discussions, the preview uses matching question and answer bullets;
+when their relationship is ambiguous it keeps the complete pair. Opening a
+preview lands on that discussion's page without removing the other discussions.
+Unmatched prepared remarks never fill a theme preview; an absent source match
+shows an explanation gap with the original discussion still accessible.
+
+The shared `EarningsTrendExplorer` groups supplied series into **Growth**,
+**Margins**, **Earnings & cash**, and **CapEx & guidance**. Unfamiliar saved
+metrics remain under **Other saved figures**. Every category keeps the metric's
+definition, periods, actual/guidance/projection labels and sources; capital
+spending retains its guidance-versus-actual comparison. Empty categories explain
+what was not collected. This is presentation of saved evidence, not expanded
+collection: earnings/cash figures appear only when the supplied package contains
+them. The public snapshot and local view can use the same component without a
+request to a provider or the private ledger.
+
+Business themes can display related saved figures using the retained topic
+mapping, with the latest actual and source beside an expandable chart. These
+figures do not establish that management's explanation is correct or that a
+different period is comparable. All negative-language speaker filters, search,
+discussion ordering, pagination, transcript navigation and downloads remain.
+Management commentary and opening-statement source wording also start collapsed;
+available saved interpretations remain visible.
+
+Focused coverage lives in
+[`earnings-review-overview.test.mjs`](../frontend/tests/earnings-review-overview.test.mjs),
+alongside the existing trend, CapEx, transcript-context and opening-highlight
+tests. They use synthetic records and do not read or modify saved research.
+
 `TranscriptBriefs` prepares the reading aid through the configured local Codex
 provider during new earnings workflows. The reader can explicitly prepare or
 retry missing explanations for retained complete transcripts. Ordinary reads

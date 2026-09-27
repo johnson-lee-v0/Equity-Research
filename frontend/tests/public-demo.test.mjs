@@ -49,7 +49,7 @@ test('public notebook links stay inside its sourced META graph and cited sources
     assert.ok(ids.has(edge.source))
     assert.ok(ids.has(edge.target))
   }
-  assert.ok(Object.keys(bundle.metafile.inputs).every(path => /(?:demoData|metaEarningsCall|metaValuation)\.ts$/.test(path)), 'Public data depends only on explicitly authored, source-bound modules')
+  assert.ok(Object.keys(bundle.metafile.inputs).every(path => /(?:demoData|metaEarningsCall|metaValuation|metaTrends)\.ts$/.test(path)), 'Public data depends only on explicitly authored, source-bound modules')
 })
 
 test('public entry build excludes the local workspace, event stream and private data paths', async () => {

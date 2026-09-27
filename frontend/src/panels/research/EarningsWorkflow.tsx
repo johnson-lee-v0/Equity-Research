@@ -759,6 +759,7 @@ export default function EarningsWorkflow({
                     ticker={selected.ticker}
                     fiscalPeriod={result?.event?.fiscal_period}
                     earningsDate={result?.event?.earnings_date}
+                    trends={result?.trends}
                     transcriptDownloadUrl={`/api/document-analysis/history/${encodeURIComponent(transcript.id)}/transcript.txt`}
                     focusSentenceId={focusSentenceId}
                     focusRequest={focusRequest}

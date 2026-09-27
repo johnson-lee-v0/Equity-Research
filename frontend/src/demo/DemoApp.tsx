@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import MarketNews from '../components/MarketNews'
-import EarningsTrends from '../panels/research/EarningsTrends'
+import EarningsTrendExplorer from '../panels/research/EarningsTrendExplorer'
 import { MemoryDetail, MemoryExplorer } from '../panels/Memory'
-import { capex, demoGraph, demoNotes, META_RELEASE, META_SLIDES, MUSE_RELEASE, latestFinancials, museThesis, questions } from './demoData'
+import { demoGraph, demoNotes, META_RELEASE, META_SLIDES, MUSE_RELEASE, latestFinancials, museThesis, questions } from './demoData'
+import { metaTrends } from './metaTrends'
 import MetaPricing, { MetaDecision, MetaWatchlist } from './MetaPricing'
 import EarningsCallReview from './EarningsCallReview'
 import '../styles.css'
@@ -25,7 +26,7 @@ export function MuseCatalyst() {
 export function EarningsSnapshot({ onNext }: { onNext: () => void }) {
   return <div className="demo-step-body"><h3>Sales rose. Operating profit fell.</h3><div className="demo-stats"><div><span>Revenue</span><strong>${latestFinancials.revenue}bn</strong><small>+{latestFinancials.revenueGrowthPercent}% year over year</small></div><div><span>Operating margin</span><strong>{latestFinancials.operatingMarginPercent}%</strong><small>{latestFinancials.priorOperatingMarginPercent}% a year earlier</small></div><div><span>Capital spending</span><strong>${latestFinancials.capex}bn</strong><small>Quarter only · includes lease principal</small></div></div>
     <p className="demo-cash-result">Company-defined free cash flow after CapEx: <strong>${latestFinancials.freeCashFlow}bn</strong>.</p>
-    <EarningsTrends series={capex} choices={[capex]} onSelect={() => {}} />
+    <EarningsTrendExplorer result={metaTrends} />
     <details><summary>Quarterly calculation and spending outlook</summary><p>Q2 CapEx = ${latestFinancials.cashPpe}bn cash PP&E + ${latestFinancials.financeLeasePrincipal}bn lease principal. The first-half total, ${latestFinancials.yearToDateCapex}bn, is not a quarterly value.</p><p>FY2026 CapEx guidance: $130–145bn, as given July 29. This is management’s forecast, not spending already reported.</p><p>Diluted EPS: ${latestFinancials.dilutedEps}, versus ${latestFinancials.priorDilutedEps}. Operating cash flow: ${latestFinancials.operatingCashFlow}bn.</p><Source href={`${META_SLIDES}#page=15`} label="Open cash-flow reconciliation" /><span> · </span><Source href={META_RELEASE} label="EPS and annual guidance source" /></details>
     <div className="demo-source-row"><Source href={META_RELEASE} label="Q2 earnings release" /><Source href={META_SLIDES} label="Q2 earnings slides" /></div>
     <EarningsCallReview />

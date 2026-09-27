@@ -8,7 +8,7 @@ import zipfile
 from decimal import Decimal
 from pathlib import Path
 
-from scripts.release_privacy import PrivateMarkers, _scan_content, build_report, path_policy_category
+from scripts.release_privacy import PrivateMarkers, _scan_content, build_report, path_policy_category, scan_git_history
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -279,6 +279,59 @@ def test_publication_path_policy_covers_private_directories_and_archive_formats(
     ):
         assert path_policy_category(path) == "private_path"
     assert path_policy_category(".env.example") is None
+
+
+def _audit_repo(root: Path) -> None:
+    root.mkdir()
+    subprocess.run(["git", "init", "-q", str(root)], check=True, capture_output=True)
+    for key, value in (("user.name", "Release Fixture"), ("user.email", "fixture@example.invalid")):
+        subprocess.run(["git", "-C", str(root), "config", key, value], check=True, capture_output=True)
+    (root / "public.txt").write_text("Public source fixture.\n", encoding="utf-8")
+    subprocess.run(["git", "-C", str(root), "add", "public.txt"], check=True, capture_output=True)
+    subprocess.run(["git", "-C", str(root), "commit", "-qm", "Public fixture"], check=True, capture_output=True)
+
+
+def test_gate_checks_staged_blob_when_worktree_is_clean_or_missing(tmp_path: Path) -> None:
+    secret = "synthetic-" + "staged-private-token"
+    markers = PrivateMarkers()
+    markers.add("credential_value", secret)
+    for worktree_state in ("clean", "missing"):
+        root = tmp_path / worktree_state
+        _audit_repo(root)
+        candidate = root / "public.txt"
+        candidate.write_text(secret, encoding="utf-8")
+        subprocess.run(["git", "-C", str(root), "add", "public.txt"], check=True, capture_output=True)
+        if worktree_state == "clean":
+            candidate.write_text("Public source fixture.\n", encoding="utf-8")
+        else:
+            candidate.unlink()
+        hits = {}
+        scan_git_history(root, markers, hits)
+        assert hits == {("git:index:public.txt", "credential_value"): 1}
+        assert secret not in str(hits)
+
+
+def test_gate_checks_commit_and_annotated_tag_messages_and_identities_without_printing_them(tmp_path: Path) -> None:
+    secret = "synthetic-" + "metadata-private-token"
+    markers = PrivateMarkers()
+    markers.add("credential_value", secret)
+    for location in ("commit_message", "commit_author", "tag_message", "tagger"):
+        root = tmp_path / location
+        _audit_repo(root)
+        if location in {"commit_author", "tagger"}:
+            subprocess.run(["git", "-C", str(root), "config", "user.name", secret], check=True, capture_output=True)
+        if location.startswith("commit"):
+            message = secret if location == "commit_message" else "Public fixture"
+            subprocess.run(["git", "-C", str(root), "commit", "--allow-empty", "-qm", message], check=True, capture_output=True)
+            expected_prefix = "git:commit:"
+        else:
+            message = secret if location == "tag_message" else "Public fixture"
+            subprocess.run(["git", "-C", str(root), "tag", "-am", message, "public-fixture"], check=True, capture_output=True)
+            expected_prefix = "git:tag:"
+        hits = {}
+        scan_git_history(root, markers, hits)
+        assert any(path.startswith(expected_prefix) and category == "credential_value" for path, category in hits), location
+        assert secret not in str(hits)
 
 
 def _money_hits(content: str, *private_values: str) -> dict:

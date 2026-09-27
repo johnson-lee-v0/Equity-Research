@@ -15,6 +15,10 @@ import {
 } from './transcriptContext'
 import type { EvidenceGroup } from './transcriptContext'
 import { managementHighlights } from './transcriptHighlights'
+import TranscriptThemeOverview from './TranscriptThemeOverview'
+import EarningsTrends from './EarningsTrends'
+import { discussionAnswerCoverage, relatedThemeTrends, savedDiscussionBrief } from './earningsReviewModel'
+import { safeTrendUrl, selectTrendSeries, trendEvidenceLabel, trendPointLabel, validTrendValue, type EarningsTrendSeries, type EarningsTrendsResult } from './earningsTrendModel'
 import { EmptyState } from './shared'
 import './transcript-reader.css'
 
@@ -34,6 +38,18 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'negative', label: 'Negative language' },
   { id: 'transcript', label: 'Full transcript' },
 ]
+
+export function ThemeTrendContext({ series }: { series: EarningsTrendSeries[] }) {
+  const [selectedId, setSelectedId] = useState<string>()
+  const selected = selectTrendSeries(series, selectedId)
+  if (!selected) return null
+  const actual = [...selected.points].reverse().find(point => point.kind === 'actual' && validTrendValue(point.value))
+  const source = safeTrendUrl(actual?.url)
+  return <section className="transcript-related-trends" aria-label="Related saved figures">
+    <p><strong>Related figures · {selected.label}:</strong> {actual ? <>{trendPointLabel(actual, selected.unit)} · {actual.period} · {trendEvidenceLabel(actual).toLowerCase()}{source && <> · <a href={source} target="_blank" rel="noreferrer">Source ↗</a></>}</> : 'No reported actual was saved for this measure.'}</p>
+    <details><summary>See the trend and other related metrics ({series.length})</summary><p className="transcript-cues">Saved figures for this topic. Their dates and definitions may differ from the discussion; they do not prove management’s explanation.</p><EarningsTrends series={selected} choices={series} onSelect={setSelectedId} /></details>
+  </section>
+}
 
 function Highlight({ text, needle, markId, startIndex }: { text: string; needle?: string; markId?: string; startIndex?: number | null }) {
   if (!needle?.trim()) return <>{text}</>
@@ -165,6 +181,7 @@ export function TranscriptView({
   analysisId,
   fiscalPeriod,
   earningsDate,
+  trends,
 }: {
   result: TranscriptResult
   ticker?: string
@@ -174,6 +191,7 @@ export function TranscriptView({
   analysisId?: string
   fiscalPeriod?: string
   earningsDate?: string
+  trends?: EarningsTrendsResult | null
 }) {
   const instanceId = useId()
   const [briefs, setBriefs] = useState<PlainLanguageBriefs | undefined>(result.plain_language)
@@ -297,6 +315,16 @@ export function TranscriptView({
     setQuoteFocus(null)
     setJumpNotice('')
   }
+  function exploreTheme(index: number, previewGroupId?: string) {
+    const theme = result.themes[index]
+    const matches = theme?.evidence.map(item => model.sentenceById.get(String(item.sentence_id))).filter((item): item is TranscriptSentence => Boolean(item)) ?? []
+    const discussions = orderDiscussionGroups(groupEvidence(matches, model), model, discussionOrder === 'questions')
+    const position = Math.max(0, discussions.findIndex(group => group.id === previewGroupId))
+    selectTab('themes')
+    setThemeIndex(index)
+    setThemePage(Math.floor(position / EVIDENCE_PAGE_SIZE))
+    scrollPanel()
+  }
   function tabKey(event: KeyboardEvent<HTMLButtonElement>, index: number) {
     const next =
       event.key === 'ArrowRight'
@@ -419,7 +447,8 @@ export function TranscriptView({
   function evidenceCard(group: EvidenceGroup) {
     const first = group.matches[0]
     const excerpts = discussionExcerpts(group, model)
-    const simple = briefs?.source_hash === result.source_hash ? briefs?.discussions[group.id] : undefined
+    const simple = savedDiscussionBrief(result, briefs, group.id)
+    const answerCoverage = discussionAnswerCoverage(group, simple?.answer_status)
     const matchesOutsideBrief = discussionMatchesOutsideBrief(group, excerpts)
     const triggerId = `${instanceId}-context-${group.id}`
     return (
@@ -433,17 +462,15 @@ export function TranscriptView({
         {simple && <section className="transcript-simple-brief" aria-label="Discussion summary bullets">
           <h4>The main points</h4>
           <ul>{simple.bullets.map((bullet, index) => <li key={index}>
-            <p><strong>{bullet.kind === 'question' ? 'They asked: ' : bullet.kind === 'answer' ? 'Management said: ' : 'What management said: '}</strong>{bullet.summary}</p>
+            <p><strong>{bullet.kind === 'question' ? 'Asked: ' : bullet.kind === 'answer' ? 'Answered: ' : 'Management said: '}</strong>{bullet.summary}</p>
             <details className="transcript-brief-context"><summary>See the words behind this</summary>
               {bullet.quotes.map((quote, quoteIndex) => <blockquote key={quoteIndex}><strong>{quote.speaker}</strong><p>“{quote.quote}” <button type="button" id={`${triggerId}-simple-${index}-${quoteIndex}`} className="transcript-inline-source transcript-text-button" onClick={() => jumpToTurn(quote.turn_id, undefined, {text: quote.quote, offset: quote.offset})}>Full transcript ↗</button></p></blockquote>)}
             </details>
           </li>)}</ul>
-          {simple.answer_status === 'partial' && <p className="transcript-cues">Some parts of the question were left unanswered.</p>}
-          {simple.answer_status === 'unclear' && <p className="transcript-cues">It is unclear whether the response answers the question.</p>}
-          {simple.answer_status === 'no_response' && <p className="transcript-cues">No management answer was found in this discussion.</p>}
           <small className="transcript-cues">Plain-language interpretation. Open the quotes to check the meaning.</small>
         </section>}
         {!simple && <p className="transcript-cues">A plain-language explanation has not been saved for this discussion. Expand the original words below to read the discussion.</p>}
+        <p className="transcript-answer-coverage"><strong>{answerCoverage.label}:</strong> {answerCoverage.text}</p>
         <details className="transcript-original-discussion">
           <summary><span className="transcript-brief-heading"><strong>{group.exchange ? 'Question & answer' : 'Management remarks'}</strong><span>The original words, with speaker context</span></span></summary>
         <div className="transcript-brief">
@@ -490,6 +517,7 @@ export function TranscriptView({
 
   return (
     <section className="transcript-reader" ref={readerRef} aria-label="Earnings call reader">
+      <TranscriptThemeOverview result={result} model={model} briefs={briefs} onSelect={exploreTheme} />
       <section className="transcript-management-highlights" aria-labelledby={`${instanceId}-management-highlights`}>
         <header>
           <div><p className="transcript-highlights-kicker">Before the analyst questions</p><h2 id={`${instanceId}-management-highlights`}>Quarter & year highlights</h2></div>
@@ -497,8 +525,8 @@ export function TranscriptView({
         </header>
         <p className="transcript-highlights-intro">What management reported in its opening remarks{ticker ? ` for ${ticker}` : ''}. Guidance and comparisons keep the periods stated on this call.</p>
         {highlights.length ? <ul>{highlights.map((highlight, index) => <li key={highlight.id}>
-          <p>{highlight.text}</p>
-          <details className="transcript-brief-context"><summary>{highlight.interpretation ? 'See management’s words' : 'Selected management wording · see source'}</summary>
+          {highlight.interpretation && <p>{highlight.text}</p>}
+          <details className="transcript-brief-context"><summary>{highlight.interpretation ? 'See management’s words' : 'Original management statement · no saved summary'}</summary>
             {highlight.quotes.map((quote, quoteIndex) => <blockquote key={`${quote.turn_id}-${quoteIndex}`}><strong>{quote.speaker}</strong><p>“{quote.quote}” <button type="button" id={`${instanceId}-highlight-${index}-${quoteIndex}`} className="transcript-inline-source transcript-text-button" onClick={() => jumpToTurn(quote.turn_id, undefined, { text: quote.quote, offset: quote.offset })}>Full transcript ↗</button></p></blockquote>)}
           </details>
         </li>)}</ul> : <p className="transcript-gap">No source-bound business highlights could be identified in the saved opening remarks. Read the transcript to review management’s presentation.</p>}
@@ -794,6 +822,7 @@ export function TranscriptView({
                   </div>
                   <label className="research-field transcript-discussion-order">Discussion order<select value={discussionOrder} onChange={(event) => { setDiscussionOrder(event.target.value); setThemePage(0); setNegativePage(0) }}><option value="questions">Questions & answers first</option><option value="call">Original call order</option></select></label>
                 </div>
+                {tab === 'themes' && <ThemeTrendContext key={theme?.name} series={relatedThemeTrends(trends, theme ? [theme.name] : [])} />}
                 <Pager
                   page={currentEvidencePage}
                   total={groups.length}

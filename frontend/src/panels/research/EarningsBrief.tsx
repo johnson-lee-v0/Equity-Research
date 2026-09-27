@@ -1,8 +1,8 @@
-import { useState, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import type { TranscriptResult } from './DocumentViews'
 import { displayDate } from './shared'
-import EarningsTrends, { CapexGuidance } from './EarningsTrends'
-import { selectTrendSeries, seriesForArea, type EarningsTrendsResult } from './earningsTrendModel'
+import EarningsTrendExplorer from './EarningsTrendExplorer'
+import type { EarningsTrendsResult } from './earningsTrendModel'
 import './earnings-brief.css'
 
 type Sentence = TranscriptResult['sentences'][number]
@@ -60,18 +60,7 @@ const areas: ReviewArea[] = [
   },
 ]
 
-const metricMatches: Record<string, RegExp> = {
-  renewal_us_canada: /\brenewal\b/i,
-  renewal_worldwide: /\brenewal\b/i,
-  net_sales_growth: /\bnet sales\b/i,
-  paid_members_growth: /\bpaid (household|members)|\bgrowth.{0,50}members|\bmember.{0,20}growth\b/i,
-  gross_margin: /\bgross margin\b/i,
-  operating_margin: /\boperating margin|operating income\b/i,
-  capex: /\bcapital expenditure|capex\b/i,
-  capex_cash_ppe: /\bcapital expenditure|capex\b/i,
-}
-
-function selectExcerpt(result: TranscriptResult, area: ReviewArea, metricId?: string): Sentence | undefined {
+function selectExcerpt(result: TranscriptResult, area: ReviewArea): Sentence | undefined {
   const themeIds = new Set(
     result.themes
       .find((theme) => theme.name === area.theme)
@@ -91,7 +80,6 @@ function selectExcerpt(result: TranscriptResult, area: ReviewArea, metricId?: st
       sentence,
       index,
       score:
-        (metricId && metricMatches[metricId]?.test(sentence.text) ? 20 : 0) +
         (area.priority.test(sentence.text) ? 6 : 0) +
         (themeIds.has(String(sentence.id)) ? 2 : 0) +
         (/\d/.test(sentence.text) ? 2 : 0) +
@@ -100,21 +88,15 @@ function selectExcerpt(result: TranscriptResult, area: ReviewArea, metricId?: st
     .sort((a, b) => b.score - a.score || a.index - b.index)[0]?.sentence
 }
 
-function EarningsReviewRow({ area, result, trends, trendsLoading, onRead }: {
+function EarningsReviewRow({ area, result, onRead }: {
   area: ReviewArea
   result: TranscriptResult
-  trends?: EarningsTrendsResult | null
-  trendsLoading?: boolean
   onRead: (sentenceId: string | number) => void
 }) {
-  const [selectedMetric, setSelectedMetric] = useState<string>()
-  const relevant = seriesForArea(trends, area.id)
-  const choices = area.id === 'outlook' && relevant.some((series) => !series.area_ids.includes('capital'))
-    ? relevant.filter((series) => !series.area_ids.includes('capital'))
-    : relevant
-  const preferredMetric = area.id === 'outlook' ? 'renewal_worldwide' : area.id === 'demand' ? 'net_sales_growth' : undefined
-  const selected = selectTrendSeries(choices, selectedMetric, preferredMetric)
-  const sentence = selectExcerpt(result, area, selected?.id)
+  const sentence = selectExcerpt(result, area)
+  const summary = sentence && result.source_hash && result.plain_language?.source_hash === result.source_hash
+    ? Object.values(result.plain_language.discussions).flatMap(discussion => discussion.bullets).find(bullet => bullet.kind !== 'question' && bullet.quotes.some(quote => quote.quote.includes(sentence.text)))?.summary
+    : undefined
   const following = sentence ? result.sentences[result.sentences.indexOf(sentence) + 1] : undefined
   const adjustment =
     area.id === 'margins' &&
@@ -128,25 +110,18 @@ function EarningsReviewRow({ area, result, trends, trendsLoading, onRead }: {
     <article className="earnings-brief-row" id={`earnings-area-${area.id}`}>
       <div className="earnings-brief-commentary">
         <h3>{area.title}</h3>
+        {summary && <p className="earnings-commentary-summary">{summary}</p>}
         {sentence ? (
-          <>
+          <details className="earnings-commentary-source">
+            <summary>Management’s original words and source</summary>
             <blockquote>“{sentence.text}”</blockquote>
             {adjustment && <blockquote>“{adjustment.text}”</blockquote>}
             <button className="earnings-quote-link" onClick={() => onRead(sentence.id)}>
               {sentence.speaker || 'Management'} · Read in context <span aria-hidden="true">↗</span>
             </button>
-          </>
+          </details>
         ) : <p className="muted-copy">No management excerpt identified. Review the full call for this topic.</p>}
-      </div>
-      <div className="earnings-brief-trends">
-        <EarningsTrends
-          series={selected}
-          choices={choices}
-          onSelect={setSelectedMetric}
-          loading={trendsLoading}
-          emptyMessage={!trends ? 'Historical figures have not been collected for this saved review yet. Update earnings materials to add sourced trends.' : undefined}
-        />
-        {area.id === 'capital' && <CapexGuidance guidance={trends?.capex_guidance} />}
+        {sentence && !summary && <p className="earnings-commentary-gap">No plain-language summary is saved for this excerpt. Open the original words to read it.</p>}
       </div>
     </article>
   )
@@ -201,17 +176,10 @@ export default function EarningsBrief({
         Compare the call with reported history. Choose a metric to see its figures over time,
         the exact definition and the sources behind each observation. Guidance is marked separately.
       </p>
-      <div className="earnings-brief-rows">
-        {areas.filter((area) => {
-          // Capital guidance already appears alongside its history in Capital & cash.
-          const metrics = seriesForArea(trends, area.id)
-          return area.id !== 'outlook' || !metrics.length || metrics.some((series) => !series.area_ids.includes('capital'))
-        }).map((area) => <EarningsReviewRow key={area.id} area={area} result={result} trends={trends} trendsLoading={trendsLoading} onRead={onRead} />)}
+      <EarningsTrendExplorer result={trends} loading={trendsLoading} />
+      <div className="earnings-brief-rows" aria-label="Management commentary by topic">
+        {areas.map(area => <EarningsReviewRow key={area.id} area={area} result={result} onRead={onRead} />)}
       </div>
-      {!!trends?.gaps?.length && <details className="earnings-trends-gaps">
-        <summary>Historical data coverage · {trends.gaps.length} {trends.gaps.length === 1 ? 'gap' : 'gaps'}</summary>
-        <ul>{trends.gaps.map((gap, index) => <li key={index}>{gap}</li>)}</ul>
-      </details>}
       <div className="earnings-position-review">
         <div>
           <h3>Your {ticker} position</h3>

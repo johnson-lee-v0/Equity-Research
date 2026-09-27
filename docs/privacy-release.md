@@ -11,7 +11,10 @@ The gate reads local SQLite databases and selected local configuration files in
 read-only mode. It derives opaque markers from real account observations, account
 identifiers and credential values, then scans each manifest file and archive
 entry. It can also inspect a prepared publication tree and checks reachable Git
-heads, tags, remotes and the current index. Its JSON result reports paths,
+heads, tags and remotes, including commit/tag messages and author/tagger metadata.
+It reads the exact staged index blobs, even when a working file has subsequently
+been cleaned or deleted; unmerged entries and unscanned submodule gitlinks fail
+the gate. Its JSON result reports paths,
 categories and counts; it does not print private values, matched content or
 value-derived fingerprints.
 
@@ -79,7 +82,10 @@ amount whose account relationship is implicit or distant. It can also flag an
 independently authored public number that equals an account observation.
 
 Preserve source-only packaging, inspect the exact publication tree and Git history,
-and review authored demo material and attribution before pushing. The
+and review authored demo material and attribution before pushing. Local Codex
+checkpoint trees and unreachable Git objects are outside the publication-history
+scope; publish only the reviewed branch or tag, never mirror the local repository.
+The
 [public demo artifact guard](../scripts/check_public_demo.py) adds a separate check
 for the static site: only its intended assets and public headline snapshot are
 accepted, and the local research runtime is rejected. Neither a source scan nor a

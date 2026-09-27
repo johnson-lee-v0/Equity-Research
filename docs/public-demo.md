@@ -9,7 +9,10 @@ local application and the separate demo entry.
 
 The META walkthrough is a **September 26, 2026 snapshot**. Its latest reported
 quarter is Q2 FY2026, ended June 30 and reported July 29. It links to the issuer's
-release and deck, shows quarter-only CapEx through $31.078 billion, and retains
+release and deck. Seven metrics cover six reported quarters: revenue, year-over-year
+revenue growth, operating margin, diluted EPS, operating cash flow, free cash flow
+and CapEx. Each point retains its source page, period and definition. The charts
+show quarter-only CapEx through $31.078 billion and retain
 the Q3 FY2025 $19.374 billion observation. The separate $50.918 billion first-half
 figure is cumulative, not a quarterly bar.
 
@@ -20,12 +23,30 @@ interpretations. Paid conversion and standalone product economics remain unknown
 Source context is collapsed by default. Financial/demo content changes only when
 this authored snapshot is reviewed; the RSS schedule does not refresh these facts.
 
-The earnings review includes actual Q&A selected from Meta’s complete July 29
-issuer transcript. Plain-language question and answer summaries retain analyst
+The earnings review covers all twelve question parts from seven analysts in
+Meta’s July 29 issuer transcript. Eight business themes group the evidence;
+profitability and outlook sections explicitly use company disclosures rather than
+invented analyst dialogue. Each exchange shows Asked, Answered and Still unclear,
+with related numerical context where a sourced measure exists. Model costs and
+Muse economics remain explicit gaps; total-company figures do not substitute for
+unreported product results. Plain-language question and answer summaries retain analyst
 and management attribution, one-based PDF page links, and short exact excerpts.
 Themes and caution language are editorial analysis, not invented dialogue or a
 sentiment score. Original-word context is collapsed by default. The five
 investment questions are a separate synthesis of the evidence.
+
+Annual CapEx shows five completed years plus separately labeled FY2026 guidance.
+Guidance comparisons retain early captured forecasts, selected revisions, closing
+actuals and source links. FY2021–23 use the issuer’s net PP&E reconciliation plus
+lease principal. Two early ranges undershot actuals, two overshot and one enclosed
+the actual; this sample does not establish systematic underestimation. Current-year
+guidance has no fabricated actual or forecast-accuracy grade. Explanations are
+source-bound, and uncaptured revisions or unexplained causes stay visible.
+
+The local app uses the same trend-category explorer and preserves every saved
+transcript theme, detailed exchanges, filters and full-reader controls. It renders
+saved explanations and collected numerical context without triggering new research.
+Missing local data is labeled, not replaced with public META figures.
 
 Pricing uses the September 25, 2026 regular-session META close and reported
 financials through June 30. Trailing GAAP EPS is reconciled from annual and

@@ -99,3 +99,55 @@ test('guidance citation labels retain approximate qualifiers and do not hide the
   assert.match(html, /aria-label="FY2025, earliest captured management capex guidance: Approximately \$30bn — Earnings call"/)
   assert.match(html, /Management capex only, using actuals on the same basis as guidance/)
 })
+
+test('reported EPS and annual spending retain their explanatory notes in Values & sources', () => {
+  const eps = {
+    id: 'diluted_eps', label: 'Diluted EPS', unit: 'USD per share', frequency: 'quarterly', area_ids: ['earnings'], basis: 'Reported GAAP EPS',
+    points: [
+      { period: 'Q1 FY2026', kind: 'actual', value: 1.25, rationale: 'Includes a one-time tax charge.', url: 'https://investor.example.com/q1' },
+      { period: 'Q2 FY2026', kind: 'actual', value: 4.5, rationale: 'Includes an income-tax benefit.', url: 'https://investor.example.com/q2' },
+      { period: 'Q3 FY2026', kind: 'projection', value: 2, rationale: 'An explicit forecast assumption, not a reported actual.' },
+    ],
+  }
+  const html = render(EarningsTrends, { series: eps, choices: [eps], onSelect: () => {} })
+  const table = html.match(/<table>[\s\S]*?<\/table>/)[0]
+  assert.match(html, /class="earnings-chart-value">\$1\.25<\/text>/)
+  assert.doesNotMatch(html, /class="earnings-chart-value"[^>]*>[^<]*USD per share/)
+  assert.match(table, /Q1 FY2026<small>Reported actual<\/small>[\s\S]*?Includes a one-time tax charge/)
+  assert.match(table, /Q2 FY2026<small>Reported actual<\/small>[\s\S]*?Includes an income-tax benefit/)
+  assert.match(table, /Q3 FY2026<small>Projection<\/small>[\s\S]*?An explicit forecast assumption/)
+  const capex = capexSeries('capex', [3])
+  capex.points[0].rationale = 'Cash outflow is net of PP&E proceeds; includes lease principal.'
+  assert.match(render(EarningsTrends, { series: capex, choices: [capex], onSelect: () => {} }), /Cash outflow is net of PP&amp;E proceeds; includes lease principal/)
+})
+
+test('a point rationale does not repeat the same coverage gap in the source table', () => {
+  const series = capexSeries('capex', [null])
+  series.points[0].gap_reason = 'No comparable actual was found.'
+  series.points[0].rationale = ' No comparable  actual was found. '
+  const html = render(EarningsTrends, { series, choices: [series], onSelect: () => {} })
+  const table = html.match(/<table>[\s\S]*?<\/table>/)[0]
+  assert.equal((table.match(/No comparable\s+actual was found\./g) || []).length, 1)
+  series.points[0].rationale = 'The retained document provides a year-to-date amount only.'
+  assert.match(render(EarningsTrends, { series, choices: [series], onSelect: () => {} }), /year-to-date amount only/)
+})
+
+
+test('named growth operands expose the prior-period source without treating it as an instruction', () => {
+  const series = { id: 'growth', label: 'Revenue growth', unit: 'percent', frequency: 'quarterly', area_ids: ['demand'], basis: 'Same quarter prior year', points: [{ period: 'Q1 FY2026', kind: 'actual', value: 20, calculation: {
+    formula: '(current / prior - 1) × 100', inputs: { revenue_usd_millions: 120, prior_revenue_usd_millions: 100, prior_source: { url: 'https://investor.example.com/prior', title: 'Prior report' }, bad_source: { url: 'javascript:alert(1)' } },
+  } }] }
+  const html = render(EarningsTrends, { series, choices: [series], onSelect: () => {} })
+  assert.match(html, /revenue usd millions: 120/)
+  assert.match(html, /prior revenue usd millions: 100/)
+  assert.match(html, /href="https:\/\/investor.example.com\/prior"/)
+  assert.doesNotMatch(html, /javascript:/)
+})
+
+test('incomplete-year guidance shows the review cutoff and preserves explanation caveats', () => {
+  const html = render(CapexGuidance, { guidance: { comparisons: [{ period: 'FY2026', initial_low: 10, initial_high: 12, actual: null, as_of: '2026-09-26' }], explanations: [{ text: 'Forecast raised for hardware costs.', interpretation: 'The year is incomplete; this is not a final miss.', url: 'https://investor.example.com/outlook' }] } })
+  assert.match(html, /Unreported as of 2026-09-26/)
+  assert.doesNotMatch(html, /Published 2026-09-26/)
+  assert.match(html, /Research context:/)
+  assert.match(html, /The year is incomplete; this is not a final miss/)
+})

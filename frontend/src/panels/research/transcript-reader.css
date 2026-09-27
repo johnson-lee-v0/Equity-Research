@@ -11,6 +11,20 @@
 .transcript-reader select {
   font: inherit;
 }
+.transcript-theme-overview { margin-bottom: 24px; }
+.transcript-overview-heading h2 { margin: 0; color: var(--ink); font-size: 1.16rem; }
+.transcript-overview-heading p { margin: 9px 0 16px; color: var(--muted); font-size: .82rem; line-height: 1.65; max-width: 86ch; }
+.transcript-overview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.transcript-overview-card { min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 7px; background: var(--panel); }
+.transcript-overview-card h3 { margin: 0 0 12px; font-size: .94rem; color: var(--ink); }
+.transcript-overview-card p { margin: 8px 0; font-size: .82rem; line-height: 1.65; color: var(--ink); overflow-wrap: anywhere; }
+.transcript-overview-card .transcript-overview-coverage, .transcript-answer-coverage { border-left: 3px solid var(--gold); padding: 8px 12px; font-size: .78rem; line-height: 1.6; color: var(--muted); }
+.transcript-answer-coverage { margin-top: 14px; }
+.transcript-related-trends { padding: 14px 16px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); margin: 12px 0; }
+.transcript-related-trends > p { font-size: .8rem; line-height: 1.65; color: var(--ink); margin: 0 0 8px; }
+.transcript-related-trends a, .transcript-related-trends summary { color: var(--green); font-size: .78rem; }
+.transcript-related-trends summary { cursor: pointer; }
+.transcript-related-trends .earnings-area-trends { margin-top: 14px; }
 .transcript-reader button:focus-visible,
 .transcript-reader input:focus-visible,
 .transcript-reader select:focus-visible,
@@ -521,6 +535,7 @@
   }
 }
 @media (max-width: 700px) {
+  .transcript-overview-grid { grid-template-columns: minmax(0, 1fr); }
   .transcript-reader {
     --reader-offset: calc(var(--chrome-height, 64px) + 132px);
   }

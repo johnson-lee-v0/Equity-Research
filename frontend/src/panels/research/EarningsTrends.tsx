@@ -52,6 +52,18 @@ function CapexCalculationSources({ point }: { point: EarningsTrendPoint }) {
   </div>
 }
 
+/** Public arithmetic operands may also arrive as named numeric fields. */
+function NamedCalculationInputs({ point }: { point: EarningsTrendPoint }) {
+  const inputs = point.calculation?.inputs
+  if (!inputs || typeof inputs !== 'object' || Array.isArray(inputs)) return null
+  return <ul>{Object.entries(inputs).map(([key, value]) => {
+    const label = key.replaceAll('_', ' ')
+    if (typeof value === 'number' && Number.isFinite(value)) return <li key={key}>{label}: {new Intl.NumberFormat('en-US', { maximumFractionDigits: 6 }).format(value)}</li>
+    if (value && typeof value === 'object' && 'url' in value && typeof value.url === 'string') return <li key={key}><SourceLink source={value as EarningsTrendSource} label={`${point.period}, ${label}`}>{label}</SourceLink></li>
+    return null
+  })}</ul>
+}
+
 function TrendChart({ series }: { series: EarningsTrendSeries }) {
   const id = useId()
   const width = Math.max(390, series.points.length * 61 + 40)
@@ -92,7 +104,8 @@ function TrendChart({ series }: { series: EarningsTrendSeries }) {
             const value = validTrendValue(point.value) ? point.value : null
             const barTop = value === null ? zero : Math.min(zero, y(value))
             const barHeight = value === null ? 0 : Math.max(Math.abs(y(value) - zero), value === 0 ? 1 : 0)
-            const label = value === null ? '—' : trendPointLabel(point, series.unit).replaceAll('bn', '')
+            const fullLabel = value === null ? '—' : trendPointLabel(point, series.unit)
+            const label = series.unit === 'USD per share' && value !== null ? `$${fullLabel.replace(' USD per share', '')}` : fullLabel.replaceAll('bn', '')
             const labelY = barTop - 8
             return (
               <g key={`${point.period}-${point.kind}-${index}`}>
@@ -141,9 +154,10 @@ function TrendSources({ series }: { series: EarningsTrendSeries }) {
                 {point.published_at && <small>Published {point.published_at.slice(0, 10)}</small>}
                 {point.source_method && <small>{point.source_method}</small>}
                 {trendGapExplanation(point) && <p>{trendGapExplanation(point)}</p>}
-                {point.kind === 'projection' && point.rationale && <p>{point.rationale}</p>}
+                {point.rationale && distinctExplanationText(point.rationale, trendGapExplanation(point) ?? undefined) && <p>{point.rationale}</p>}
                 {point.calculation?.formula && <p>Calculation: {point.calculation.formula}{point.calculation.basis ? ` · ${point.calculation.basis}` : ''}{point.calculation.rounding ? ` · ${point.calculation.rounding}` : ''}</p>}
                 <CapexCalculationSources point={point} />
+                <NamedCalculationInputs point={point} />
                 {point.quote && point.measure_basis !== 'cash_ppe_plus_finance_lease_principal' && <blockquote>{point.quote}</blockquote>}
               </td>
             </tr>
@@ -187,7 +201,7 @@ export function CapexGuidance({ guidance }: { guidance: EarningsTrendsResult['ca
                   </td>
                   <td>
                     <SourceLink source={comparison.actual_source} label={`${comparison.period}, actual management capex: ${trendPointDescription({ period: comparison.period, kind: 'actual', value: comparison.actual, qualifier: comparison.actual_qualifier || comparison.actual_source?.qualifier }, 'USD billions')}`}>{qualifiedTrendLabel(formatTrendValue(comparison.actual, 'USD billions'), comparison.actual_qualifier || comparison.actual_source?.qualifier)}</SourceLink>
-                    {(comparison.actual_source?.published_at || comparison.as_of) && <small>Published {(comparison.actual_source?.published_at || comparison.as_of || '').slice(0, 10)}</small>}
+                    {comparison.actual_source?.published_at ? <small>Published {comparison.actual_source.published_at.slice(0, 10)}</small> : comparison.as_of && <small>{validTrendValue(comparison.actual) ? 'As of' : 'Unreported as of'} {comparison.as_of.slice(0, 10)}</small>}
                     {comparison.actual_source?.measure_basis === 'cash_ppe_plus_finance_lease_principal' && <details className="earnings-guidance-revisions"><summary>How this actual was calculated</summary><p>{comparison.actual_source.calculation?.formula}</p><CapexCalculationSources point={{ ...comparison.actual_source, period: comparison.period, kind: 'actual', value: comparison.actual }} /></details>}
                   </td>
                   <td>{validTrendValue(comparison.variance) ? `${approximateGuidanceComparison(comparison) ? '≈' : ''}${comparison.variance > 0 ? '+' : ''}${formatTrendValue(comparison.variance, 'USD billions')}` : 'Not comparable'}{guidanceComparisonLabel(comparison) && <small>{guidanceComparisonLabel(comparison)}</small>}</td>
@@ -210,6 +224,7 @@ export function CapexGuidance({ guidance }: { guidance: EarningsTrendsResult['ca
                   {explanation.published_at ? `Published ${explanation.published_at.slice(0, 10)}` : ''}
                 </p>}
                 {commentary && <p>{commentary}</p>}
+                {explanation.interpretation && <p><strong>Research context:</strong> {explanation.interpretation}</p>}
                 {explanation.quote && <blockquote>“{explanation.quote}”</blockquote>}
                 <SourceLink source={explanation} label={`${explanation.period ? `${explanation.period}, ` : ''}management’s explanation of capex changes`} />
               </div>

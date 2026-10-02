@@ -271,3 +271,12 @@ connector is unavailable. Quotes, options, filings, and model availability are
 reported with their observation/retrieval state; the system does not invent a
 price, probability, account total, or investment result. The local process
 must remain running for task monitoring and schedules.
+
+## License
+
+Original project code is licensed under the [MIT License](LICENSE),
+copyright 2026 Johnson Lee. Third-party software dependencies, model weights,
+assets and data remain subject to their own licenses and terms. This includes
+issuer filings and transcripts, market data, news/RSS content and quoted
+excerpts; the MIT license does not relicense that material. Source links and
+attribution do not grant additional redistribution rights.

@@ -6,7 +6,12 @@ export default defineConfig(({ mode }) => ({
   plugins: [react(), mode === 'demo' ? dependencyNotices() : null, {
     name: 'demo-page-title',
     transformIndexHtml: (html) => mode === 'demo'
-      ? html.replace('<title>Research Engine</title>', '<title>ResearchCouncil · Equity Research Demo</title>')
+      ? html
+        .replace('<title>Research Engine</title>', '<title>ResearchCouncil · Equity Research Demo</title>')
+        .replace(
+          /<meta name="description" content="[^"]*" \/>/,
+          '<meta name="description" content="Fictional educational research demo with invented company figures, valuation scenarios and a connected notebook. No live market data or personalized investment advice." />',
+        )
       : html,
   }],
   base: mode === 'demo' ? './' : '/',

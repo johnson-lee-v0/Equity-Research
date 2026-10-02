@@ -1,5 +1,4 @@
-"""Prevent publishing local state or the ordinary app through the Pages artifact."""
-import json
+"""Prevent publishing local state, retired public data or missing license notices."""
 from pathlib import Path
 
 import pytest
@@ -11,49 +10,48 @@ def artifact(tmp_path: Path) -> Path:
     root = tmp_path / 'site'
     (root / 'assets').mkdir(parents=True)
     (root / 'index.html').write_text('<html><script src="./assets/demo.js"></script></html>')
-    (root / 'assets/demo.js').write_text('console.log("Public demo", "META")')
+    (root / 'assets/demo.js').write_text('console.log("Public demo", "Fictional teaching demo", "Cedar Workshop")')
     (root / 'assets/demo.css').write_text('body{color:green}')
-    (root / 'market-news.json').write_text(json.dumps({'status': 'unavailable', 'items': []}))
+    (root / 'LICENSE.txt').write_text('MIT License\nCopyright 2026 Johnson Lee\nTHE SOFTWARE IS PROVIDED "AS IS"')
+    (root / 'THIRD_PARTY_NOTICES.txt').write_text('react\nPermission is hereby granted')
     return root
 
 
-def test_allows_only_the_public_demo_static_artifact(tmp_path):
+def test_allows_only_the_fictional_static_artifact_with_notices(tmp_path):
     assert check_artifact(artifact(tmp_path)) == []
 
 
-@pytest.mark.parametrize('entry', ['console.log("Public demo", "ExampleCo")', 'console.log("META")'])
-def test_requires_the_public_meta_case_entry(tmp_path, entry):
+@pytest.mark.parametrize('entry', ['console.log("Public demo", "META")', 'console.log("Cedar Workshop")'])
+def test_requires_an_explicitly_fictional_public_entry(tmp_path, entry):
     root = artifact(tmp_path)
     (root / 'assets/demo.js').write_text(entry)
     assert any('public demo entry was not found' in error for error in check_artifact(root))
 
 
-@pytest.mark.parametrize('retired_label', [
-    'Fictional ExampleCo',
-    'FICTIONAL EXAMPLECO',
-    'Generated sample values to demonstrate chart controls.',
-    'All 60 points are synthetic.',
+@pytest.mark.parametrize('retired', [
+    'META-Q2-2026-Earnings-Call-Transcript.pdf',
+    'https://stockanalysis.com/stocks/meta/history/',
+    'market-news.json',
+    '751.66',
 ])
-def test_rejects_legacy_synthetic_valuation_even_with_valid_meta_entry(tmp_path, retired_label):
+def test_rejects_retired_real_company_data_and_news(tmp_path, retired):
     root = artifact(tmp_path)
-    (root / 'assets/old-valuation.js').write_text(f'console.log({json.dumps(retired_label)})')
-    errors = check_artifact(root)
-    assert errors == ['Legacy synthetic valuation found in public script: assets/old-valuation.js']
+    (root / 'assets/retired.js').write_text(repr(retired))
+    assert any('Retired real-company content' in error for error in check_artifact(root))
 
 
-def test_allows_trigonometry_used_by_public_memory_visualization(tmp_path):
+def test_allows_trigonometry_used_by_memory_visualization(tmp_path):
     root = artifact(tmp_path)
     (root / 'assets/memory.js').write_text('export function position(angle) { return Math.sin(angle); }')
     assert check_artifact(root) == []
 
 
-def test_rejects_private_exports_backend_files_and_source_maps(tmp_path):
+def test_rejects_private_exports_source_maps_backend_and_news_snapshots(tmp_path):
     root = artifact(tmp_path)
-    (root / 'research.sqlite3').write_bytes(b'private fixture')
-    (root / 'worker.py').write_text('pass')
-    (root / 'assets/demo.js.map').write_text('{}')
+    for name in ['research.sqlite3', 'worker.py', 'assets/demo.js.map', 'market-news.json']:
+        (root / name).write_text('test fixture')
     errors = check_artifact(root)
-    assert len(errors) == 3
+    assert len(errors) == 4
     assert all('Unexpected public artifact' in error for error in errors)
 
 
@@ -75,9 +73,8 @@ def test_rejects_symlink_without_reading_its_target(tmp_path):
     assert all('synthetic private content' not in error for error in errors)
 
 
-def test_requires_a_bounded_public_news_snapshot(tmp_path):
+@pytest.mark.parametrize('filename', ['LICENSE.txt', 'THIRD_PARTY_NOTICES.txt'])
+def test_requires_license_files(tmp_path, filename):
     root = artifact(tmp_path)
-    (root / 'market-news.json').write_text(json.dumps({'status': 'fresh', 'items': [{}] * 7}))
-    assert any('unexpected shape' in error for error in check_artifact(root))
-    (root / 'market-news.json').unlink()
-    assert any('missing or invalid' in error for error in check_artifact(root))
+    (root / filename).unlink()
+    assert any(filename in error for error in check_artifact(root))

@@ -1,6 +1,26 @@
 .demo-app { min-height:100vh; background:var(--bg); }
-.demo-app > .skip-link { position:fixed; top:8px; left:12px; z-index:100; padding:10px 16px; border-radius:6px; color:#172519; background:#e7edce; transform:translateY(-160%); }
-.demo-app > .skip-link:focus { transform:translateY(0); }
+.demo-risk-notice { padding:18px 21px; margin:0 0 20px; border:1px solid #ad986c; border-left:4px solid #d7bd83; border-radius:8px; background:#302d24; color:#f1e7cf; font-size:.86rem; line-height:1.6; }
+.demo-risk-notice strong { display:block; font-size:1rem; }
+.demo-risk-notice p { margin:8px 0 0; max-width:1100px; }
+.demo-provenance { margin:0 0 30px; color:var(--muted); font-size:.85rem; line-height:1.6; }
+.demo-provenance strong { color:var(--ink); }
+.demo-source-directory { border-top:1px solid var(--line); padding-top:22px; margin-top:34px; }
+.demo-source-directory h2 { font-size:1.05rem; }
+.demo-source-directory p { color:var(--muted); max-width:880px; font-size:.85rem; }
+.demo-license-links { display:flex; flex-wrap:wrap; gap:12px 20px; flex-shrink:0; }
+.demo-footer>span { max-width:720px; line-height:1.6; }
+.demo-teaching-chart { margin:24px 0; padding:20px; border:1px solid var(--line); border-radius:8px; }
+.demo-teaching-chart figcaption { font-size:.85rem; color:var(--muted); margin-bottom:20px; }
+.demo-teaching-bars { display:flex; align-items:flex-end; gap:30px; min-height:130px; }
+.demo-teaching-bars>div { flex:1; text-align:center; }
+.demo-teaching-bar { background:#9bb58a; border-radius:4px 4px 0 0; display:flex; align-items:flex-start; justify-content:center; padding-top:7px; color:#14221b; font-weight:650; }
+.demo-teaching-bars small { display:block; margin-top:8px; color:var(--muted); font-size:.7rem; }
+.demo-table-caption { text-align:left; color:var(--ink); margin:24px 0 0; font-size:.85rem; }
+.demo-table-hint { display:none; font-size:.75rem; color:var(--muted); }
+.demo-table-wrap:focus-visible { outline:2px solid #c4d5a7; outline-offset:4px; }
+@media(max-width:650px) { .demo-table-hint { display:block; } }
+.demo-app > .skip-link { position:fixed; top:8px; left:12px; z-index:100; padding:10px 16px; border-radius:6px; color:#172519; background:#e7edce; transform:translateY(-160%); opacity:0; }
+.demo-app > .skip-link:focus { transform:translateY(0); opacity:1; }
 .demo-app .market-news { margin:24px 0; }
 .demo-topbar { display:flex; justify-content:space-between; align-items:center; gap:20px; max-width:1320px; margin:auto; padding:24px 30px; }
 .demo-brand { color:var(--ink); font-size:1.1rem; font-weight:700; text-decoration:none; display:flex; align-items:center; gap:12px; }

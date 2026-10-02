@@ -6,13 +6,10 @@ on:
     branches: [main]
     paths:
       - 'frontend/**'
-      - 'backend/app/research/market_news.py'
-      - 'scripts/export_market_news.py'
+      - 'LICENSE'
       - 'scripts/check_public_demo.py'
       - 'scripts/release_privacy.py'
       - '.github/workflows/pages.yml'
-  schedule:
-    - cron: '17 */6 * * *'
 
 permissions:
   contents: read
@@ -33,7 +30,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Set up Python for the public RSS reader
+      - name: Set up Python for artifact checks
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -62,15 +59,10 @@ jobs:
         run: pnpm --dir frontend install --frozen-lockfile
 
       - name: Verify public examples and isolation
-        run: node --test frontend/tests/public-demo.test.mjs frontend/tests/public-earnings-call.test.mjs frontend/tests/meta-trends.test.mjs frontend/tests/meta-valuation.test.mjs frontend/tests/market-news.test.mjs
+        run: node --test frontend/tests/public-demo.test.mjs frontend/tests/dependency-notices.test.mjs
 
       - name: Build only the public demo
         run: pnpm --dir frontend run build:demo
-
-      - name: Refresh public market headlines
-        run: |
-          python -m pip install --disable-pip-version-check 'httpx==0.28.1'
-          python scripts/export_market_news.py --output frontend/dist/demo/market-news.json
 
       - name: Inspect the exact Pages artifact
         run: |

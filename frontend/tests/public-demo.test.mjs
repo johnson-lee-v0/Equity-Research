@@ -7,123 +7,92 @@ import { renderToStaticMarkup } from 'react-dom/server'
 
 const require = createRequire(import.meta.url)
 const { build } = createRequire(require.resolve('vite'))('esbuild')
-const bundle = await build({
-  entryPoints: [fileURLToPath(new URL('../src/demo/demoData.ts', import.meta.url))],
-  bundle: true, write: false, platform: 'node', format: 'cjs', packages: 'external',
-  logLevel: 'silent', metafile: true,
-})
-const compiled = { exports: {} }
-new Function('require', 'module', 'exports', bundle.outputFiles[0].text)(require, compiled, compiled.exports)
-const { capex, demoNotes, demoGraph, questions, latestFinancials, DEMO_AS_OF, EARNINGS_REPORTED_AT, EARNINGS_PERIOD_END, MUSE_RELEASED_AT, MUSE_RELEASE } = compiled.exports
-const close = (actual, expected) => assert.ok(Math.abs(actual - expected) < 0.000001, `${actual} does not match independently calculated ${expected}`)
+async function compile(relativePath) {
+  const bundle = await build({
+    entryPoints: [fileURLToPath(new URL(relativePath, import.meta.url))],
+    bundle: true, write: false, platform: 'node', format: 'cjs', packages: 'external', jsx: 'automatic',
+    define: { 'import.meta.env.BASE_URL': '"./"' }, loader: { '.css': 'empty' }, logLevel: 'silent', metafile: true,
+  })
+  const module = { exports: {} }
+  new Function('require', 'module', 'exports', bundle.outputFiles[0].text)(require, module, module.exports)
+  return { ...module.exports, inputs: Object.keys(bundle.metafile.inputs) }
+}
+const data = await compile('../src/demo/syntheticData.ts')
+const view = await compile('../src/demo/SyntheticDemo.tsx')
+const render = component => renderToStaticMarkup(React.createElement(component))
+const close = (actual, expected) => assert.ok(Math.abs(actual - expected) < 1e-9)
 
-test('every actual capex bar and factual research question links to issuer material', () => {
-  assert.equal(capex.frequency, 'quarterly')
-  assert.equal(capex.points.find(point => point.period === 'Q3 FY2025').value, 19.374)
-  assert.equal(capex.points.some(point => point.value === 50.078), false, 'Year-to-date spending is not a quarterly bar')
-  for (const point of capex.points) {
-    assert.equal(point.kind, 'actual')
-    const url = new URL(point.url)
-    assert.equal(url.protocol, 'https:')
-    assert.equal(url.hostname, 's21.q4cdn.com')
-    assert.match(url.pathname, /^\/399680738\/files\/doc_financials\/2026\/q2\//)
-    assert.ok(point.published_at)
-    assert.match(point.source_method, /issuer/)
-  }
-  for (const question of questions.filter(question => question.source)) {
-    assert.ok(['investor.atmeta.com', 's21.q4cdn.com', 'about.fb.com', 'stockanalysis.com'].includes(new URL(question.source).hostname))
-  }
+test('one-year arithmetic responds to downside and upside without pretending to predict returns', () => {
+  close(data.calculateExample(5, 16).future, 50.4)
+  close(data.calculateExample(-20, 12).future, 28.8)
+  close(data.calculateExample(15, 20).future, 69)
+  close(data.calculateExample(0, 16).future, 48)
+  close(data.calculateExample(-100, 12).future, 0)
+  close(data.reviewThreshold, 36)
+  for (const [growth, multiple] of [[NaN, 16], [5, Infinity], [-101, 16], [5, -1]]) assert.equal(data.calculateExample(growth, multiple), null)
 })
 
-test('public notebook links stay inside its sourced META graph and cited sources', () => {
-  const ids = new Set(demoNotes.map(note => note.id))
-  assert.equal(ids.size, demoNotes.length)
-  assert.equal(demoGraph.total_nodes, demoNotes.length)
-  for (const note of demoNotes) {
-    assert.equal(note.frontmatter.namespace, 'demo')
-    assert.match(note.path, /^demo\//)
+test('all teaching notes are original fictional material, with closed graph links and no third-party provenance claims', () => {
+  const ids = new Set(data.syntheticNotes.map(note => note.id))
+  assert.equal(data.syntheticGraph.total_nodes, ids.size)
+  assert.deepEqual(data.syntheticGraph.tickers, [])
+  for (const note of data.syntheticNotes) {
+    assert.equal(note.status, 'fictional_teaching_material')
+    assert.equal(note.source_url, undefined)
+    assert.equal(note.ticker, null)
     assert.ok(note.links.every(link => ids.has(link.target)))
-    if (note.source_url) assert.ok(['investor.atmeta.com', 's21.q4cdn.com', 'about.fb.com', 'stockanalysis.com'].includes(new URL(note.source_url).hostname))
   }
-  for (const edge of demoGraph.edges) {
-    assert.ok(ids.has(edge.source))
-    assert.ok(ids.has(edge.target))
-  }
-  assert.ok(Object.keys(bundle.metafile.inputs).every(path => /(?:demoData|metaEarningsCall|metaValuation|metaTrends)\.ts$/.test(path)), 'Public data depends only on explicitly authored, source-bound modules')
+  assert.ok(data.syntheticGraph.edges.every(edge => ids.has(edge.source) && ids.has(edge.target)))
+  assert.equal(data.inputs.length, 1, 'Teaching inputs import no real-company data or source archive')
 })
 
-test('public entry build excludes the local workspace, event stream and private data paths', async () => {
-  const publicBuild = await build({
+test('entry displays advice, total-loss, staleness and static-fictional notices without opening disclosures', () => {
+  const html = render(view.default)
+  const visible = html.replace(/<details\b[^>]*>[\s\S]*?<\/details>/gu, '')
+  for (const pattern of [/Education and research only/, /not personalized investment advice/, /total loss/, /wrong|errors/, /stale/, /Independently verify/, /Fictional teaching demo/, /Static examples/, /no live research/, /LICENSE\.txt/, /THIRD_PARTY_NOTICES\.txt/]) assert.match(visible, pattern)
+  assert.doesNotMatch(html, /market-news\.json|Latest headlines|751\.66|Muse|Q2 FY2026/)
+  assert.match(html, /hosting providers may log requests/)
+})
+
+test('financial scenarios display limitations alongside the controls and decision exercise', () => {
+  for (const component of [view.PricingExample, view.DecisionExample]) {
+    const html = render(component)
+    const visible = html.replace(/<details\b[^>]*>[\s\S]*?<\/details>/gu, '')
+    assert.match(visible, /All company figures and prices here are invented/)
+    assert.match(visible, /not probabilities or a worst-case limit/)
+    assert.match(visible, /entire value/)
+    assert.match(visible, /Independently verify/)
+  }
+  const html = render(view.PricingExample)
+  assert.match(html, /Annual EPS growth assumption/)
+  assert.match(html, /P\/E multiple assumption/)
+  assert.match(html, /\$50\.40/)
+  assert.match(html, /No dividends, fees, taxes, debt changes or dilution/)
+})
+
+test('earnings table identifies all numbers as invented and does not fabricate real management speech', () => {
+  const html = render(view.EarningsExample)
+  assert.match(html, /Original fictional teaching inputs/)
+  assert.match(html, /no real company, filing or earnings call/)
+  assert.match(html, /104/)
+  assert.match(html, /12\.5%/)
+  assert.match(html, /14.*9/)
+  assert.doesNotMatch(html, /<blockquote|Zuckerberg|META|Stock Analysis/)
+})
+
+test('public dependency closure excludes the local workspace, retired real-company data and news fetching', async () => {
+  const bundle = await build({
     entryPoints: [fileURLToPath(new URL('../src/main.tsx', import.meta.url))],
     bundle: true, write: false, platform: 'browser', format: 'esm', packages: 'external', jsx: 'automatic',
     define: { __PUBLIC_DEMO__: 'true', 'import.meta.env.BASE_URL': '"./"' },
     loader: { '.css': 'empty' }, logLevel: 'silent', metafile: true,
   })
-  const inputs = Object.keys(publicBuild.metafile.inputs).map(path => path.replaceAll('\\', '/'))
-  assert.ok(inputs.some(path => path.endsWith('/demo/DemoApp.tsx')))
-  assert.equal(inputs.some(path => path.endsWith('/src/App.tsx')), false, 'The local workspace is not a public build dependency')
+  const inputs = Object.keys(bundle.metafile.inputs).map(path => path.replaceAll('\\', '/'))
+  assert.ok(inputs.some(path => path.endsWith('/demo/SyntheticDemo.tsx')))
+  assert.ok(inputs.some(path => path.endsWith('/panels/MemoryGraph3D.tsx')), 'Interactive notebook remains available')
+  assert.equal(inputs.some(path => /\/(?:App|DemoApp|MarketNews|MetaPricing|metaValuation|metaTrends|metaEarningsCall|demoData)\.[jt]sx?$/.test(path)), false)
   assert.equal(inputs.some(path => /(?:^|\/)(?:data|runtime|private|backups)\//.test(path)), false)
-  const code = publicBuild.outputFiles.map(file => file.text).join('\n')
-  assert.doesNotMatch(code, /new EventSource\(|\/api\/runs|\/api\/memory\/sync|\/api\/office/)
-  assert.match(code, /market-news\.json/)
-})
-
-
-test('financial snapshot uses the reported June quarter and preserves quarter-only cash arithmetic', () => {
-  assert.equal(DEMO_AS_OF, '2026-09-26')
-  assert.equal(EARNINGS_REPORTED_AT, '2026-07-29')
-  assert.equal(EARNINGS_PERIOD_END, '2026-06-30')
-  assert.equal(latestFinancials.period, 'Q2 FY2026')
-  assert.equal(latestFinancials.revenue, 60.801)
-  assert.equal(latestFinancials.operatingMarginPercent, 31)
-  assert.equal(latestFinancials.priorOperatingMarginPercent, 43)
-  assert.deepEqual(capex.points.map(point => point.value), [13.692, 17.012, 19.374, 22.137, 19.84, 31.078])
-  assert.equal(capex.points.at(-1).period, 'Q2 FY2026')
-  assert.equal(capex.points.some(point => point.period === 'Q3 FY2026'), false)
-  close(latestFinancials.cashPpe + latestFinancials.financeLeasePrincipal, 31.078)
-  close(latestFinancials.operatingCashFlow - latestFinancials.capex, 0.784)
-  assert.equal(latestFinancials.yearToDateCapex, 50.918)
-  assert.equal(capex.points.some(point => point.value === 50.918), false)
-  assert.deepEqual(latestFinancials.annualCapexGuidance, [130, 145])
-})
-
-test('Muse is a later sourced catalyst and an unresolved economics question', () => {
-  assert.equal(MUSE_RELEASED_AT, '2026-09-08')
-  assert.ok(MUSE_RELEASED_AT > EARNINGS_PERIOD_END)
-  assert.ok(MUSE_RELEASED_AT <= DEMO_AS_OF)
-  assert.equal(MUSE_RELEASE, 'https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/')
-  assert.ok(questions.some(question => question.source === MUSE_RELEASE && /after Q2/.test(question.answer)))
-  assert.ok(demoNotes.some(note => note.id === 'muse' && note.source_url === MUSE_RELEASE))
-  assert.ok(demoNotes.some(note => note.kind === 'gap' && /Muse/.test(note.title)))
-})
-
-test('rendered earnings and Muse cards distinguish actuals, guidance and interpretation with sources closed', async () => {
-  const ui = await build({
-    entryPoints: [fileURLToPath(new URL('../src/demo/DemoApp.tsx', import.meta.url))],
-    bundle: true, write: false, platform: 'node', format: 'cjs', packages: 'external', jsx: 'automatic',
-    define: { 'import.meta.env.BASE_URL': '"./"' },
-    loader: { '.css': 'empty' }, logLevel: 'silent',
-  })
-  const module = { exports: {} }
-  new Function('require', 'module', 'exports', ui.outputFiles[0].text)(require, module, module.exports)
-  const html = renderToStaticMarkup(React.createElement(module.exports.EarningsSnapshot, { onNext() {} }))
-  assert.match(html, /Sales rose\. Operating profit fell\./)
-  assert.ok(questions.some(question => /2\.40/.test(question.context ?? '') && /1\.18/.test(question.context ?? '')))
-  assert.match(html, /60\.801/)
-  assert.match(html, /31\.078/)
-  assert.match(html, /0\.784/)
-  assert.match(html, /130–145bn/)
-  assert.match(html, /management’s forecast/)
-  assert.match(html, /launch cannot explain Q2 growth/)
-  assert.match(html, /Thesis interpretations/)
-  assert.match(html, /What would prove it/)
-  assert.match(html, /Company claims and launch source/)
-  assert.doesNotMatch(html, /<details[^>]*\bopen(?:[ =]|>)/)
-  assert.match(html, /Review the five questions/)
-  const home = renderToStaticMarkup(React.createElement(module.exports.default))
-  assert.match(home, /Data checked September 26, 2026/)
-  assert.doesNotMatch(html + home, /ExampleCo|Generated sample values|Fictional allocation|Illustrative intake/)
-  assert.match(html, /META earnings call analysis/)
-  assert.match(html, /Speaker context and original wording/)
-  assert.doesNotMatch(home, /Historical example|October 29, 2025/)
+  const code = bundle.outputFiles.map(file => file.text).join('\n')
+  assert.doesNotMatch(code, /new EventSource\(|\/api\/runs|\/api\/memory\/sync|\/api\/office|market-news\.json|fetch\(/)
+  assert.doesNotMatch(code, /localStorage|sessionStorage|sendBeacon|googletagmanager/)
 })

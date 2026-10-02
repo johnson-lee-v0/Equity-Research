@@ -3,19 +3,14 @@
 from __future__ import annotations
 
 import argparse
-import json
 from pathlib import Path
 import re
 
-
-# The source privacy gate runs separately. This guard additionally prevents a
-# local-app build, source maps, arbitrary exports or backend files being uploaded.
 _LOCAL_RUNTIME = re.compile(r"(?:/api/(?:office|runs|events|memory/sync)|new\s+EventSource\s*\()")
-# These are labels from the retired synthetic valuation, not mathematical
-# functions: the public memory visualization legitimately uses trigonometry.
-_LEGACY_SYNTHETIC_CONTENT = re.compile(
-    r"fictional exampleco|generated sample values|all 60 points are synthetic",
-    re.IGNORECASE,
+# Fail if a retired real-company payload or feed is accidentally imported again.
+_RETIRED_PUBLIC_CONTENT = re.compile(
+    r"META-Q2-2026-Earnings-Call-Transcript|introducing-muse-personal-ai-agent|"
+    r"stockanalysis\.com/stocks/meta|market-news\.json|751\.66|60\.801"
 )
 
 
@@ -24,7 +19,7 @@ def check_artifact(root: Path) -> list[str]:
     if not root.is_dir():
         return ["Demo artifact directory is missing"]
     files = [path for path in root.rglob('*') if path.is_file() or path.is_symlink()]
-    allowed_root = {'index.html', 'favicon.svg', 'market-news.json'}
+    allowed_root = {'index.html', 'favicon.svg', 'LICENSE.txt', 'THIRD_PARTY_NOTICES.txt'}
     scripts = []
     for path in files:
         rel = path.relative_to(root)
@@ -39,18 +34,25 @@ def check_artifact(root: Path) -> list[str]:
             scripts.append(code)
             if _LOCAL_RUNTIME.search(code):
                 errors.append(f"Local research runtime found in public script: {rel}")
-            if _LEGACY_SYNTHETIC_CONTENT.search(code):
-                errors.append(f"Legacy synthetic valuation found in public script: {rel}")
+            if _RETIRED_PUBLIC_CONTENT.search(code):
+                errors.append(f"Retired real-company content or news feed found in public script: {rel}")
     if not (root / 'index.html').is_file():
         errors.append('Demo index.html is missing')
-    if not any('Public demo' in code and 'META' in code for code in scripts):
-        errors.append('Authored public demo entry was not found')
-    try:
-        snapshot = json.loads((root / 'market-news.json').read_text(encoding='utf-8'))
-        if snapshot.get('status') not in {'fresh', 'stale', 'unavailable'} or not isinstance(snapshot.get('items'), list) or len(snapshot['items']) > 6:
-            errors.append('Public news snapshot has an unexpected shape')
-    except (OSError, ValueError, TypeError, AttributeError):
-        errors.append('Public news snapshot is missing or invalid')
+    if not any('Public demo' in code and 'Fictional teaching demo' in code and 'Cedar Workshop' in code for code in scripts):
+        errors.append('Authored fictional public demo entry was not found')
+    for filename, markers in {
+        'LICENSE.txt': ['MIT License', 'Copyright 2026 Johnson Lee', 'THE SOFTWARE IS PROVIDED "AS IS"'],
+        'THIRD_PARTY_NOTICES.txt': ['react', 'Permission is hereby granted'],
+    }.items():
+        path = root / filename
+        if path.is_symlink():
+            continue
+        try:
+            content = path.read_text(encoding='utf-8')
+            if not all(marker in content for marker in markers):
+                errors.append(f'Required license content is missing: {filename}')
+        except (OSError, UnicodeError):
+            errors.append(f'Required license file is missing or unreadable: {filename}')
     return errors
 
 
@@ -63,4 +65,4 @@ if __name__ == '__main__':
         for error in errors:
             print(error)
         raise SystemExit(1)
-    print('Public demo artifact: static allowlist and runtime isolation checks passed')
+    print('Public demo artifact: static allowlist, notices and runtime isolation checks passed')

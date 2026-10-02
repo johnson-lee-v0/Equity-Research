@@ -87,7 +87,7 @@ checkpoint trees and unreachable Git objects are outside the publication-history
 scope; publish only the reviewed branch or tag, never mirror the local repository.
 The
 [public demo artifact guard](../scripts/check_public_demo.py) adds a separate check
-for the static site: only its intended assets and public headline snapshot are
-accepted, and the local research runtime is rejected. Neither a source scan nor a
+for the static site: only its intended assets and required license notices are
+accepted; news snapshots and the local research runtime are rejected. Neither a source scan nor a
 frontend build means the Pages deployment has succeeded; see the
 [public demo guide](public-demo.md) for that separate verification.

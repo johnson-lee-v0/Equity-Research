@@ -115,7 +115,6 @@ jobs:
       - name: Build and inspect the public demo separately
         run: |
           pnpm --dir frontend run build:demo
-          python scripts/export_market_news.py --output frontend/dist/demo/market-news.json
           python scripts/check_public_demo.py frontend/dist/demo
           python scripts/release_privacy.py --root . --tree frontend/dist/demo \
             --no-git-history --allow-empty-private-inputs

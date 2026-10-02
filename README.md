@@ -7,11 +7,19 @@ memory and a private evidence archive. It supports research and paper decisions.
 It never places trades. The optional 3D office loads only when opened.
 
 Explore the [public browser demo](https://johnson-lee-v0.github.io/Equity-Research/)
-to try the earnings walkthrough, pricing controls and 3D memory without installing
-anything. It follows a sourced META case with actual call analysis, reported
-financials, dated market figures and explicit valuation assumptions.
+to try an earnings walkthrough, pricing controls and 3D memory without installing
+anything. Its Cedar Workshop example is entirely fictional: original teaching
+figures, authored questions and browser calculations, with no live research or
+market feed. Original publishers are linked instead of republishing their content.
 The agent loop and personal research remain local; see the
 [public demo guide](docs/public-demo.md) for the build and deployment boundary.
+
+**Education and research only.** This project is not personalized investment
+advice or a recommendation to buy, sell or hold a security. Returns are not
+guaranteed; investments can lose their entire value. Data, calculations and model
+outputs may be wrong or stale. Independently verify current primary sources and
+assumptions before relying on research, and seek qualified advice when appropriate.
+The software license does not establish the accuracy or suitability of research.
 
 Open **http://127.0.0.1:8000** after starting the app. This is the single application
 entry point; the older research desk and Congress site are no longer required
@@ -260,9 +268,11 @@ the explicitly historical [implementation contract](docs/implementation-contract
 
 GitHub Actions validates the source and local frontend/backend without provider
 credentials. A separate Pages workflow builds and publishes only the public demo
-from `frontend/dist/demo`, with public RSS headlines refreshed every six hours.
+from `frontend/dist/demo`, including its generated dependency license notices.
 The FastAPI service, Codex agent loop, private ledger and source archive are not
 hosted on Pages. See [public demo deployment](docs/public-demo.md).
+The public build contains no news snapshot or scheduled RSS collection. The local
+news reader remains available subject to the source providers' terms.
 
 ## Scope and limitations
 
@@ -280,3 +290,7 @@ assets and data remain subject to their own licenses and terms. This includes
 issuer filings and transcripts, market data, news/RSS content and quoted
 excerpts; the MIT license does not relicense that material. Source links and
 attribution do not grant additional redistribution rights.
+
+The public demo links to its complete build-generated third-party notices and
+MIT license. See [content and dependency scope](docs/public-demo.md#content-and-licenses)
+for the published boundary and limitations; previous Git history is unchanged.

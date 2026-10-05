@@ -8,9 +8,12 @@ It never places trades. The optional 3D office loads only when opened.
 
 Explore the [public browser demo](https://johnson-lee-v0.github.io/Equity-Research/)
 to try an earnings walkthrough, pricing controls and 3D memory without installing
-anything. Its Cedar Workshop example is entirely fictional: original teaching
-figures, authored questions and browser calculations, with no live research or
-market feed. Original publishers are linked instead of republishing their content.
+anything. The public demo build contains the complete original META example:
+dated company results, source-linked earnings-call summaries, valuation scenarios
+and a connected notebook. An educational-use acknowledgment is required before
+interaction. No live research or market feed runs in this public build.
+GitHub Pages serves the latest successful public-demo deployment; a local build
+alone does not confirm the published version.
 The agent loop and personal research remain local; see the
 [public demo guide](docs/public-demo.md) for the build and deployment boundary.
 

@@ -1,125 +1,163 @@
 # Public demo and local research
 
-The [public demo](https://johnson-lee-v0.github.io/Equity-Research/) demonstrates a
-research workflow using **Cedar Workshop, an entirely fictional company**. Its
-numbers, questions and conclusions were authored for teaching on October 2, 2026.
-They do not describe an issuer, listed security, analyst, market quotation or
-actual investment result. This is a static application with browser calculations,
-not a live agent session or a source of current financial advice.
+The public-demo build restores the **complete original META research
+example**, not the smaller portfolio calculator. It includes the earnings
+walkthrough, source-linked call review, five research questions, comparable-multiple
+valuation controls, decision framework, watchlist and connected 3D/text
+notebook. Portfolio and Congress remain explicit empty public views: no personal
+holdings, balances or private disclosures are included. A failed 3D download
+switches the notebook to its complete text list; a failed research-entry download
+shows a reload action instead of clearing the page. The text reader's connected
+notes include every relationship in the graph, in both directions.
 
-## What a visitor can try
+The [public URL](https://johnson-lee-v0.github.io/Equity-Research/) serves the
+latest successful Pages deployment. Confirm its commit and inspect the live
+page after publication; a local build is not deployment evidence.
 
-- An earnings walkthrough with four invented quarters, a revenue chart and a
-  table showing operating profit, operating cash and capital spending.
-- Five research questions that separate the example's assumptions from what
-  would need independent verification for a real company.
-- A valuation sensitivity control: invented EPS × one year of assumed growth ×
-  an assumed P/E multiple. Its three teaching scenarios are not probabilities,
-  expected returns, performance history or a worst-case loss limit.
-- An example watchlist review threshold and an authored opposing argument.
-  Neither creates an order, recommendation or personal allocation.
-- A connected fictional notebook, with 3D navigation and a text-list fallback.
-- Links to original filings, disclosure registers and news publishers. No
-  headlines, articles, transcript excerpts or third-party market datasets are
-  copied into this public build.
+## Acknowledgment before interaction
 
-The entry and every financial scenario show visible education/research, advice,
-loss and verification notices. Investments can lose their entire value; data,
-calculations and model outputs can be wrong or stale. A disclaimer does not
-establish that a use is lawful, suitable or accurate.
+`frontend/src/demo/AcknowledgedDemo.tsx` shows a native modal notice on entry.
+The visitor must check an unchecked acknowledgment and press **I understand —
+open META** before the original `DemoApp` is mounted. Escape or **Back to
+overview** leaves the interactive example closed. The overview can reopen the
+notice. Acceptance is page-local React state: it is not stored, transmitted or
+reused after a reload. The public demo has no account or trading connection.
 
-The local app and its earnings/research capabilities remain separate. It may
-store records its operator supplies and use configured providers; its data and
-credentials are not inputs to the public build. Public Portfolio and Congress
-pages show that boundary without asserting anyone's actual holdings or conflicts.
+The notice explains education/research use, the absence of personalized advice
+or recommendations, stale or erroneous inputs, hypothetical scenarios, and the
+possibility of total investment loss. It disclaims accuracy and suitability
+warranties without promising legal immunity. **Acknowledgment is not a release
+of liability or a waiver of legal rights.** It also does not grant permission
+to republish third-party content. Persistent notices remain visible in the app
+and alongside valuation controls after the modal closes.
+
+## Agent engineering first, with an earnings-first example
+
+The public presentation leads with the **end-to-end multi-agent research
+workflow**, not NLP as a standalone project identity. After acknowledgment,
+**Explore the agent workflow** uses the existing `#research` route and scrolls
+to a visible, non-collapsed workflow overview before the META case. It covers
+Chief of Staff intake, public source discovery and collection, earnings and
+fundamental research, deterministic validation and valuation, CIO challenge
+and review, and retained company memory. Agent roles describe responsibilities;
+they do not imply a separate model execution for every stage. The overview links
+to the canonical [research workflow](research-workflow.md).
+
+The META walkthrough remains open by default. **Inspect earnings-call
+analysis** is an explicit secondary action, and the call review still appears
+before the reported financial snapshot and trend explorer. Business themes
+and cautionary-language views retain analyst questions, management answers,
+speaker context, original transcript pages and explicit open questions. NLP is
+one inspectable component of the larger engineering system, not its headline.
+
+`#earnings-call` opens the call review; `#earnings` is an alias for the same first
+step. `#financials` opens its reported-results section. `#valuation` goes directly
+to the third walkthrough step. `#five-questions` and `#decision` select the other
+research steps. These routes do not bypass acknowledgment. Ordinary section
+routes, including `#research` and `#strategy-testing`, remain available.
+
+The static call fixture declares `analysisType: 'editorial_reading'`: its twelve
+editorial topics across seven analyst exchanges are source-bound paraphrases,
+not output from a live NLP execution or an automated sentiment score. The
+presentation illustrates the local app's research workflow without claiming
+the public example generated these classifications, executed agent jobs, or
+replays a recorded autonomous research run. “Still unclear”
+records an editorial follow-up, not a statement or promise from management.
+
+Valuation starts with the supported multiple method, META's own historical
+ratios and an editable target-multiple assumption. The public comparison is
+five annual issuer observations per available metric, **not a verified peer
+set**. Historical averages do not silently become the target. Growth appears in
+a closed **Optional: test growth sensitivity** disclosure; it changes the
+twelve-month scenario, not today's reported-baseline implied value. Sensitivity
+edits do not rewrite the published decision or watchlist. See the
+[comparable-valuation contract](comparable-valuation.md) for source, accounting
+basis and peer-verification boundaries in the full local application.
+
+## Real data versus assumptions
+
+The original case uses Q2 FY2026 results (period ended June 30; released July 29),
+a September 25, 2026 market close, and a September 26 dated research snapshot.
+It is historical evidence, not a live quote or a claim to current research.
+The September 8 Muse announcement is a later event, not an explanation for
+already-reported Q2 revenue. Undisclosed standalone product economics remain
+explicit evidence gaps.
+
+Financial data and source-bound summaries were checked against issuer releases,
+filings and the official call transcript. Growth rates, valuation multiples,
+scenario weights and review thresholds are authored assumptions, not reported
+facts or expected returns. The arithmetic stays deterministic in code. Date,
+unit and source labels must remain visible; do not relabel these observations
+as current when restoring or changing presentation.
+
+The original news component depended on an absent snapshot. The restored static
+build links to original publishers instead of inventing a news feed or connecting
+to the private API. No RSS refresh is scheduled.
 
 ## Content and licenses
 
 Original project code is under the root [MIT license](../LICENSE). Third-party
-software, data, models and source material retain their own licenses and terms.
-The public footer links to `LICENSE.txt` and `THIRD_PARTY_NOTICES.txt`. The latter
-is generated from packages represented in Vite's final chunks and emitted assets,
-including transitive dependencies and build-injected runtime helpers, with their full
-license/notice text. A dependency without a discoverable license fails the build.
-The inventory is specific to that build and conservatively includes module
-records that render no JavaScript, so extracted CSS and required notices are not
-lost. It is not a claim that every installed dependency executes in the browser.
-For the pinned React Three Fiber version whose npm package omits its license,
-the build uses a version- and hash-checked copy from its exact upstream tag;
-the copy is in `frontend/third-party-licenses/` and its provenance is pinned in
-`frontend/dependencyNotices.mjs`.
+software, source material and provider observations retain their own terms.
+Issuer summaries are editorial paraphrases, with a small number of attributed
+short quotations linked to their original transcript pages. No full transcript,
+source archive or provider dataset is bundled.
 
-The fictional content replaces the prior META demonstration and provider-derived
-market/ratio observations. Earlier source modules and their dedicated tests were
-preserved outside the publication checkout before removal from the current tree.
-The original local workspace was not modified. Previous Git commits, releases,
-clones and cached deployments have not been rewritten or withdrawn.
+The original five-row historical ratio excerpt retains StockAnalysis attribution.
+Its [terms](https://stockanalysis.com/terms-of-use/) distinguish attributed snippet
+reuse from full republication and competing database/product use. The intended
+public use still deserves a rights review before publication; the acknowledgment
+supplies no additional permission. Financial facts and the expression presenting
+them should not be conflated. The [US Copyright Office](https://www.copyright.gov/help/faq/faq-protect.html)
+distinguishes facts from expression, and its [fair-use guidance](https://www.copyright.gov/fair-use/)
+does not establish a universally safe quotation length. Tests on excerpt lengths
+are technical checks, not legal permission tests. No issuer/provider endorsement
+or affiliation is implied.
 
-This conservative publication choice avoids relying on uncertain republication
-permission for issuer transcript expression or provider datasets. It does not
-claim that ordinary financial facts are copyright protected:
+`LICENSE.txt` and `THIRD_PARTY_NOTICES.txt` remain required build outputs. The
+latter is generated from packages represented in Vite's final chunks and emitted
+assets, including transitive dependencies and build-injected helpers. A dependency
+without a discoverable license fails the build. The pinned React Three Fiber
+fallback license remains version- and hash-checked in
+`frontend/dependencyNotices.mjs` and `frontend/third-party-licenses/`.
 
-- The [SEC's Website Dissemination policy](https://www.sec.gov/about/privacy-information#websites)
-  permits copying and redistribution of public SEC website information with
-  appropriate citation; it does not permit implying SEC endorsement.
-- The [US Copyright Office](https://www.copyright.gov/help/faq/faq-protect.html)
-  distinguishes facts from protected expression. Its [fair-use guidance](https://www.copyright.gov/fair-use/)
-  gives no universally safe word count. Earlier excerpt-length tests were not a
-  legal permission test and are not used as one here.
-- [StockAnalysis's terms](https://stockanalysis.com/terms-of-use/) permit
-  unmodified, attributed snippets but restrict full republication and competing
-  database/product uses. This demo uses no copied provider observations.
-- [MarketWatch RSS guidance](https://www.marketwatch.com/site/rss) provides
-  conditional headline reuse; [Bloomberg's terms](https://www.bloomberg.com/notices/tos/)
-  restrict redistribution. The public demo now links to publishers instead of
-  distributing a mixed-feed snapshot. The local RSS reader is unchanged and
-  users remain responsible for permitted use of acquired content.
-
-These references describe the reviewed publication boundary, not legal advice
-or permission to reuse unrelated material. No affiliation or endorsement by a
-linked issuer, publisher, regulator or software author is implied.
+Original modules were recovered from commit
+`fd4dbd1fa1b8662977f349326bcb4c6ad8f7d0f6`. The external preserved originals were
+not modified. The fictional modules remain available as historical source but
+are not imported by the restored public entry. Prior commits, releases, cached
+deployments and the separate full local workspace were not rewritten.
 
 ## Build and inspect
 
-From a clean checkout with Python, Node.js and pinned pnpm installed:
-
 ```sh
 pnpm --dir frontend install --frozen-lockfile
-node --test frontend/tests/public-demo.test.mjs frontend/tests/dependency-notices.test.mjs
+node --test frontend/tests/*.test.mjs
 pnpm --dir frontend run build:demo
 python scripts/check_public_demo.py frontend/dist/demo
 python -m http.server 8080 --bind 127.0.0.1 --directory frontend/dist/demo
 ```
 
-Open `http://127.0.0.1:8080/`. Relative assets and hash navigation support the
-repository path on GitHub Pages. The ordinary `pnpm --dir frontend run build`
-continues to build the local application; never upload that output as the demo.
+The compile-time `__PUBLIC_DEMO__` flag selects the acknowledgment wrapper;
+acceptance opens the original Meta demo. Relative assets and hash navigation
+support GitHub Pages repository paths. The ordinary `build` still builds the
+private local application; never upload that output as the demo.
 
-The compile-time `__PUBLIC_DEMO__` flag selects
-`frontend/src/demo/SyntheticDemo.tsx`. Tests inspect its dependency closure and
-rendered notices. The artifact guard rejects local runtime endpoints, source
-maps, news snapshots, private exports and the retired real-company demo payload.
-Only HTML, JavaScript, CSS, favicon and the two required license files are allowed.
-The separate source/privacy check remains in place. Tests establish these
-technical boundaries, not investment accuracy or exhaustive legal compliance.
+The artifact guard permits only HTML, JS, CSS, favicon and required license files.
+It requires the Meta entry and acknowledgment copy, rejects local API/runtime,
+live feed and telemetry markers, and rejects source maps, databases, source
+archives and symlinks. Source/dependency tests separately check that private
+application modules and storage/telemetry are not imported. These tests establish
+technical boundaries, not exhaustive legal compliance or investment accuracy.
 
-## Requests and privacy
+## Requests, privacy and publication
 
-Demo controls use page state. They do not submit account data, questions or
-portfolio information to an application server, and no application analytics,
-external fonts, RSS proxy or market-data API is used. Browser assets are served
-from the site origin. Its hosting provider may retain ordinary request logs.
-Clicking an external link opens that provider's site and is subject to its own
-policies. The public site makes no promise about third-party logging or retention.
+Demo controls use browser memory and static calculations. They do not send
+questions, positions or acknowledgments to a service. No application analytics,
+external fonts, RSS proxy or market-data API is used. Hosting providers can keep
+ordinary request logs. External source links open the provider's site and are
+subject to its policies; the demo makes no third-party retention promise.
 
-## Publish with GitHub Pages
-
-For `johnson-lee-v0/Equity-Research`, set **Settings → Pages → Build and deployment
-→ Source: GitHub Actions**. The [Pages workflow](../.github/workflows/pages.yml)
-runs on relevant pushes or manual dispatch. There is no scheduled RSS refresh.
-The build has read-only repository access; only deployment receives `pages:
-write` and `id-token: write`. It uploads the inspected `frontend/dist/demo`
-artifact, never the repository root, local build, backend, database or archive.
-
-Confirm the Actions deployment and inspect the deployed URL before claiming the
-site is updated. A successful local build alone is not deployment evidence.
+The [Pages workflow](../.github/workflows/pages.yml) builds and inspects
+`frontend/dist/demo`, never the repository root, backend, database or archive.
+There is no scheduled feed job. Build access remains read-only; only deployment
+receives Pages permissions. Publish only when authorized, and verify the Actions
+deployment and deployed URL before claiming the live site has changed.

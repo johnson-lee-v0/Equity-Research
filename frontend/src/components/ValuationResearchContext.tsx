@@ -138,7 +138,6 @@ function HistoricalPe({ history, sourceLinks, prose, asOf }: { history: NonNulla
 type SupplementalHistory = { ticker: string; namespace: Namespace; provider_multiples?: ResearchContext['provider_multiples'] }
 
 export default function ValuationResearchContext({ context, sourceLinks, prose, ticker, namespace }: Props) {
-  const [selectedHistory, setSelectedHistory] = useState('P/E')
   const [supplemental, setSupplemental] = useState<SupplementalHistory | null>(null)
   const [updating, setUpdating] = useState(false)
   const [error, setError] = useState('')
@@ -172,7 +171,16 @@ export default function ValuationResearchContext({ context, sourceLinks, prose, 
     }
   }
   const fresh = supplemental && supplemental.ticker === ticker && supplemental.namespace === namespace ? supplemental.provider_multiples : undefined
-  const providerHistories = { ...context.provider_multiples, ...fresh }
+  return <ValuationResearchContextView context={{ ...context, provider_multiples: { ...context.provider_multiples, ...fresh } }} sourceLinks={sourceLinks} prose={prose} actions={<>
+    {endpoint && namespace === 'real' && <div className="price-target-history-refresh"><button type="button" className="button" disabled={updating} onClick={() => void updateHistory()}>{updating ? 'Updating multiple history…' : 'Update multiple history'}</button><small>P/S, EV/EBITDA and book-value comparisons · no new agent run</small></div>}
+    {error && <p className="price-target-note" role="alert">{error}</p>}
+  </>} />
+}
+
+/** Interactive presentation of supplied evidence, with no API client or refresh. */
+export function ValuationResearchContextView({ context, sourceLinks, prose, actions }: Pick<Props, 'context' | 'sourceLinks' | 'prose'> & { actions?: ReactNode }) {
+  const [selectedHistory, setSelectedHistory] = useState('P/E')
+  const providerHistories = context.provider_multiples ?? {}
   const histories: Record<string, NonNullable<ResearchContext['historical_pe']>> = { ...(context.historical_pe ? { 'P/E': context.historical_pe } : {}), ...(context.historical_multiples ?? {}) }
   for (const [metric, history] of Object.entries(providerHistories)) {
     if (!histories[metric]?.points?.length) histories[metric] = history
@@ -187,8 +195,7 @@ export default function ValuationResearchContext({ context, sourceLinks, prose, 
   return <div className="price-target-research-context">
     {context.earnings_bridge && <EarningsBridge bridge={context.earnings_bridge} sourceLinks={sourceLinks} prose={prose} />}
     {Object.keys(histories).length > 1 && <label className="price-target-method-select">Company multiple history <select value={activeHistory} onChange={(event) => setSelectedHistory(event.target.value)}>{Object.keys(histories).map((name) => <option key={name} value={name}>{name}</option>)}</select></label>}
-    {endpoint && namespace === 'real' && <div className="price-target-history-refresh"><button type="button" className="button" disabled={updating} onClick={() => void updateHistory()}>{updating ? 'Updating multiple history…' : 'Update multiple history'}</button><small>P/S, EV/EBITDA and book-value comparisons · no new agent run</small></div>}
-    {error && <p className="price-target-note" role="alert">{error}</p>}
+    {actions}
     {adapted && <HistoricalPe asOf={context.as_of} history={adapted} sourceLinks={sourceLinks} prose={prose} />}
   </div>
 }

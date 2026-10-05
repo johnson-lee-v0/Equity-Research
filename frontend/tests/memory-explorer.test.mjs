@@ -50,7 +50,21 @@ new Function('require', 'module', 'exports', bundle.outputFiles[0].text)(
   name => name === 'react' ? componentReact : name === 'offline-memory-api' ? { apiFetch: (...args) => readApi(...args) } : require(name),
   compiled, compiled.exports,
 )
-const { default: Memory, MemoryExplorer, MemoryNoteList, MemoryDetail } = compiled.exports
+const { default: Memory, MemoryExplorer, MemoryNoteList, MemoryDetail, MemoryMapBoundary } = compiled.exports
+
+test('a failed lazy 3D import is contained and opens the complete text-list fallback', () => {
+  let unavailable = 0
+  const child = React.createElement('span', null, '3D scene')
+  const boundary = new MemoryMapBoundary({ children: child, onUnavailable: () => unavailable++ })
+  assert.equal(boundary.render(), child)
+  boundary.state = MemoryMapBoundary.getDerivedStateFromError(new Error('Stale chunk unavailable'))
+  boundary.componentDidCatch(new Error('Stale chunk unavailable'))
+  assert.equal(unavailable, 1)
+  const html = renderToStaticMarkup(boundary.render())
+  assert.match(html, /role="status"/)
+  assert.match(html, /Opening the text notebook/)
+  assert.doesNotMatch(html, /3D scene/)
+})
 
 function render(component, props) {
   let tree

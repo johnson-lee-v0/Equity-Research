@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Component, lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { apiFetch } from '../api'
 import { Icon } from '../components/Icon'
 import { formatCalendarDate } from '../date'
@@ -8,6 +8,15 @@ import type { MemoryCameraAction } from './MemoryGraph3D'
 import './memory.css'
 
 const MemoryGraph3D = lazy(() => import('./MemoryGraph3D'))
+
+// A failed lazy chunk (for example, an old tab after deployment) must not erase
+// the notebook. The parent switches to its complete keyboard-readable list.
+export class MemoryMapBoundary extends Component<{ children: ReactNode; onUnavailable: () => void }, { failed: boolean }> {
+  state = { failed: false }
+  static getDerivedStateFromError() { return { failed: true } }
+  componentDidCatch() { this.props.onUnavailable() }
+  render() { return this.state.failed ? <p role="status">Opening the text notebook…</p> : this.props.children }
+}
 
 function dateLabel(value: string | null) {
   if (!value) return 'Date unavailable'
@@ -91,7 +100,7 @@ export function MemoryExplorer({ graph, selectedId, onSelect, onRead }: { graph:
     </div>
     {unavailable && <p className="memory-fallback" role="status">3D is unavailable on this device. You can still explore every note and connection in the list.</p>}
     {!showList && companies.length > 1 && <div className="memory-company-shortcuts" aria-label="Start with a company"><span>Start with</span>{companies.slice(0, 8).map((company) => <button type="button" key={company.id} aria-pressed={company.id === selectedId} onClick={() => { onSelect(company.id); camera('focus') }}>{company.ticker || company.title}</button>)}</div>}
-    {showList ? <div className="memory-list-view"><MemoryNoteList nodes={nodes} selectedId={selectedId} onSelect={onSelect} /></div> : <div className="memory-graph-stage"><Suspense fallback={<p role="status" className="memory-loading">Opening 3D memory…</p>}><MemoryGraph3D graph={graph} selectedId={selectedId} onSelect={onSelect} cameraAction={cameraAction} visibleIds={isolate ? connected : undefined} onUnavailable={onUnavailable} /></Suspense></div>}
+    {showList ? <div className="memory-list-view"><MemoryNoteList nodes={nodes} selectedId={selectedId} onSelect={onSelect} /></div> : <div className="memory-graph-stage"><MemoryMapBoundary onUnavailable={onUnavailable}><Suspense fallback={<p role="status" className="memory-loading">Opening 3D memory…</p>}><MemoryGraph3D graph={graph} selectedId={selectedId} onSelect={onSelect} cameraAction={cameraAction} visibleIds={isolate ? connected : undefined} onUnavailable={onUnavailable} /></Suspense></MemoryMapBoundary></div>}
     <div className="memory-selection-bar" aria-live="polite"><div><span>{selected ? memoryKind(selected.kind).label : 'Explore your research'}</span><strong>{selected?.title || (selectedId ? 'Reading a note outside this view' : 'Select a company or note to begin')}</strong></div>{selectedId && <button type="button" className="button" onClick={onRead}>Read selected note <Icon name="chevron" size={14} /></button>}</div>
     <div className="memory-graph-foot">{showList ? <span>Select any note to read it and follow its connections.</span> : <><span>Drag to rotate · Scroll to zoom · Right-drag to move</span><span>Touch: drag to rotate · Pinch to zoom</span></>}{isolate && <span>Connections shown within the current filters. Read the note for all its links.</span>}</div>
     {!showList && <details className="memory-note-index"><summary>Browse {nodes.length.toLocaleString()} notes as a list</summary><MemoryNoteList nodes={nodes} selectedId={selectedId} onSelect={onSelect} /></details>}

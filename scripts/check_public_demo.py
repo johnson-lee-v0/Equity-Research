@@ -7,11 +7,9 @@ from pathlib import Path
 import re
 
 _LOCAL_RUNTIME = re.compile(r"(?:/api/(?:office|runs|events|memory/sync)|new\s+EventSource\s*\()")
-# Fail if a retired real-company payload or feed is accidentally imported again.
-_RETIRED_PUBLIC_CONTENT = re.compile(
-    r"META-Q2-2026-Earnings-Call-Transcript|introducing-muse-personal-ai-agent|"
-    r"stockanalysis\.com/stocks/meta|market-news\.json|751\.66|60\.801"
-)
+# The restored META example is intentionally public; live feeds and private
+# application services are not. Content provenance is reviewed separately.
+_PUBLIC_NETWORK = re.compile(r"market-news\.json|new\s+WebSocket\s*\(|sendBeacon\s*\(")
 
 
 def check_artifact(root: Path) -> list[str]:
@@ -34,12 +32,13 @@ def check_artifact(root: Path) -> list[str]:
             scripts.append(code)
             if _LOCAL_RUNTIME.search(code):
                 errors.append(f"Local research runtime found in public script: {rel}")
-            if _RETIRED_PUBLIC_CONTENT.search(code):
-                errors.append(f"Retired real-company content or news feed found in public script: {rel}")
+            if _PUBLIC_NETWORK.search(code):
+                errors.append(f"Live feed or telemetry found in public script: {rel}")
     if not (root / 'index.html').is_file():
         errors.append('Demo index.html is missing')
-    if not any('Public demo' in code and 'Fictional teaching demo' in code and 'Cedar Workshop' in code for code in scripts):
-        errors.append('Authored fictional public demo entry was not found')
+    combined = '\n'.join(scripts)
+    if not all(marker in combined for marker in ('Public demo', 'META', 'Understand the limits.', 'I understand', 'not personalized financial advice')):
+        errors.append('Acknowledged META public demo entry was not found')
     for filename, markers in {
         'LICENSE.txt': ['MIT License', 'Copyright 2026 Johnson Lee', 'THE SOFTWARE IS PROVIDED "AS IS"'],
         'THIRD_PARTY_NOTICES.txt': ['react', 'Permission is hereby granted'],

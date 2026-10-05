@@ -37,6 +37,8 @@
 .demo-search input { flex:1; min-width:0; color:var(--ink); padding:9px 12px; border:0; background:transparent; }
 .demo-primary { background:#c4d5a7; border:1px solid #c4d5a7; border-radius:6px; color:#172519; min-height:44px; padding:10px 16px; font-weight:650; font-size:.85rem; cursor:pointer; }
 .demo-primary:hover { background:#dce7c9; }
+.demo-app a.demo-primary,.demo-app .demo-action-row>a.button { display:inline-flex; align-items:center; justify-content:center; text-decoration:none; }
+.demo-app a.demo-primary:focus-visible,.demo-app button:focus-visible,.demo-app input:focus-visible { outline:2px solid #e7edce; outline-offset:4px; }
 .demo-notice { padding:12px 15px; border:1px solid #76694c; border-radius:7px; background:#302c22; color:#eddbb9; font-size:.8rem; }
 .demo-notice strong,.demo-notice span { display:block; }
 .demo-notice span { margin-top:4px; }
@@ -74,6 +76,25 @@
 .demo-controls input[type=number] { color:var(--ink); border:1px solid var(--line-strong); border-radius:5px; background:var(--panel-deep); padding:8px; max-width:180px; }
 .demo-app input[type=range] { width:100%; accent-color:#c4d5a7; }
 .demo-pricing>.price-target-research-context { margin:24px 0; }
+.demo-financials,#earnings-call,#five-questions,#valuation,#decision { scroll-margin-top:24px; }
+.demo-financials { border-top:1px solid var(--line); padding-top:28px; margin-top:30px; }
+.demo-financials>h3 { margin-top:9px; }
+.demo-valuation-intro { max-width:850px; }
+.demo-valuation-intro h3 { margin:8px 0 12px; }
+.demo-valuation-intro p { color:var(--muted); font-size:.9rem; }
+.demo-valuation-intro strong { color:var(--ink); font-weight:550; }
+.demo-multiple-layout { display:grid; grid-template-columns:minmax(230px,.65fr) minmax(0,1.35fr); gap:24px; align-items:start; margin-top:24px; }
+.demo-multiple-control { padding:22px; border:1px solid #6e8a64; border-radius:8px; background:#263824; }
+.demo-multiple-control label { display:block; color:#e7edce; font-weight:650; font-size:.9rem; margin-bottom:16px; }
+.demo-multiple-control>div { display:flex; align-items:center; gap:12px; }
+.demo-multiple-control input { width:140px; min-height:48px; padding:8px 12px; border:1px solid #8da57e; border-radius:6px; color:var(--ink); background:var(--panel-deep); font-size:1.4rem; }
+.demo-multiple-control>div>span { font-size:1.4rem; color:#d2dfc8; }
+.demo-multiple-control p { color:var(--muted); font-size:.82rem; line-height:1.6; }
+.demo-multiple-history { min-width:0; }
+.demo-multiple-history>h4 { margin:0 0 12px; font-size:.9rem; }
+.demo-multiple-history .price-target-research-context { margin:0; }
+.demo-growth-sensitivity .demo-controls { grid-template-columns:1fr; max-width:420px; margin-bottom:0; }
+@media(max-width:850px) { .demo-multiple-layout { grid-template-columns:1fr; } }
 .demo-action-row { display:flex; gap:12px; flex-wrap:wrap; margin:22px 0; }
 .demo-debate { display:grid; grid-template-columns:repeat(3,1fr); gap:15px; }
 .demo-debate article { padding:18px; border:1px solid #5c715d; border-radius:7px; background:#233127; }

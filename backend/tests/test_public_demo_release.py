@@ -1,4 +1,4 @@
-"""Prevent publishing local state, retired public data or missing license notices."""
+"""Prevent publishing local state, live feeds or missing license/entry notices."""
 from pathlib import Path
 
 import pytest
@@ -10,34 +10,39 @@ def artifact(tmp_path: Path) -> Path:
     root = tmp_path / 'site'
     (root / 'assets').mkdir(parents=True)
     (root / 'index.html').write_text('<html><script src="./assets/demo.js"></script></html>')
-    (root / 'assets/demo.js').write_text('console.log("Public demo", "Fictional teaching demo", "Cedar Workshop")')
+    (root / 'assets/demo.js').write_text('console.log("Public demo", "META", "Understand the limits.", "I understand", "not personalized financial advice")')
     (root / 'assets/demo.css').write_text('body{color:green}')
     (root / 'LICENSE.txt').write_text('MIT License\nCopyright 2026 Johnson Lee\nTHE SOFTWARE IS PROVIDED "AS IS"')
     (root / 'THIRD_PARTY_NOTICES.txt').write_text('react\nPermission is hereby granted')
     return root
 
 
-def test_allows_only_the_fictional_static_artifact_with_notices(tmp_path):
+def test_allows_the_acknowledged_static_meta_artifact_with_notices(tmp_path):
     assert check_artifact(artifact(tmp_path)) == []
 
 
 @pytest.mark.parametrize('entry', ['console.log("Public demo", "META")', 'console.log("Cedar Workshop")'])
-def test_requires_an_explicitly_fictional_public_entry(tmp_path, entry):
+def test_requires_the_meta_entry_and_acknowledgment_notices(tmp_path, entry):
     root = artifact(tmp_path)
     (root / 'assets/demo.js').write_text(entry)
     assert any('public demo entry was not found' in error for error in check_artifact(root))
 
 
-@pytest.mark.parametrize('retired', [
-    'META-Q2-2026-Earnings-Call-Transcript.pdf',
-    'https://stockanalysis.com/stocks/meta/history/',
-    'market-news.json',
-    '751.66',
+@pytest.mark.parametrize('network', [
+    'fetch("market-news.json")',
+    'new WebSocket("wss://example.test")',
+    'navigator.sendBeacon("https://example.test", "fixture")',
 ])
-def test_rejects_retired_real_company_data_and_news(tmp_path, retired):
+def test_rejects_live_feeds_and_telemetry(tmp_path, network):
     root = artifact(tmp_path)
-    (root / 'assets/retired.js').write_text(repr(retired))
-    assert any('Retired real-company content' in error for error in check_artifact(root))
+    (root / 'assets/network.js').write_text(network)
+    assert any('Live feed or telemetry' in error for error in check_artifact(root))
+
+
+def test_allows_restored_real_company_facts_and_source_links(tmp_path):
+    root = artifact(tmp_path)
+    (root / 'assets/meta.js').write_text('console.log("META-Q2-2026-Earnings-Call-Transcript.pdf", "https://stockanalysis.com/stocks/meta/history/", 751.66, 60.801)')
+    assert check_artifact(root) == []
 
 
 def test_allows_trigonometry_used_by_memory_visualization(tmp_path):

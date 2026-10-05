@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => ({
         .replace('<title>Research Engine</title>', '<title>ResearchCouncil · Equity Research Demo</title>')
         .replace(
           /<meta name="description" content="[^"]*" \/>/,
-          '<meta name="description" content="Fictional educational research demo with invented company figures, valuation scenarios and a connected notebook. No live market data or personalized investment advice." />',
+          '<meta name="description" content="Explore a dated Meta research example with source-linked earnings, valuation assumptions and a connected notebook. Educational research, not personalized investment advice." />',
         )
       : html,
   }],

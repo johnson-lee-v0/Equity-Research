@@ -1,0 +1,32 @@
+:root { color-scheme: dark; }
+body { margin: 0; background: #10151a; color: #e6ebee; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.research-entry { max-width: 760px; margin: 0 auto; padding: clamp(28px, 7vw, 88px) 24px; }
+.research-entry-brand { color: #a5d7ca; text-decoration: none; font-size: 15px; }
+.research-entry-label { color: #a5d7ca; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; margin-top: 32px; }
+.research-entry h1 { font-size: clamp(32px, 6vw, 60px); line-height: 1.08; letter-spacing: -.04em; margin: 20px 0; }
+.research-entry > p { line-height: 1.65; }
+.research-entry .demo-risk-notice, .research-persistent-notice .demo-risk-notice { border-left: 2px solid #a5d7ca; background: #192128; padding: 16px 20px; margin: 28px 0; line-height: 1.6; font-size: 14px; }
+.research-entry button, .research-ack-dialog button, .research-accepted-banner button { min-height: 44px; padding: 11px 16px; border: 1px solid #617278; border-radius: 7px; color: #e6ebee; background: transparent; font: inherit; cursor: pointer; }
+button.research-notice-primary { background: #b6e0ce; color: #10251d; border-color: #b6e0ce; font-weight: 650; }
+button.research-notice-primary:disabled { background: #26342f; color: #a9b4ae; border-color: #526258; cursor: not-allowed; }
+.research-ack-dialog { color: #e6ebee; background: #172027; border: 1px solid #536269; border-radius: 16px; width: min(620px, calc(100vw - 40px)); max-height: calc(100dvh - 40px); overflow: auto; padding: 0; box-sizing: border-box; }
+.research-ack-dialog::backdrop { background: rgb(3 8 12 / 82%); backdrop-filter: blur(5px); }
+.research-ack-topbar { position: sticky; top: 0; z-index: 2; display: flex; justify-content: flex-end; padding: 12px 16px; background: #172027; }
+.research-ack-dialog .research-ack-top-close { display: inline-flex; align-items: center; gap: 12px; font-size: 14px; }
+.research-ack-dialog form { padding: clamp(22px, 4vw, 36px); }
+.research-ack-topbar + form { padding-top: 8px; }
+.research-ack-dialog .research-entry-label { margin-top: 0; }
+.research-ack-dialog h2 { font-size: clamp(26px, 4vw, 34px); line-height: 1.15; margin: 14px 0 20px; letter-spacing: -.025em; }
+.research-ack-dialog p { font-size: 15px; line-height: 1.55; }
+.research-ack-dialog a, .research-license-footer a { color: #b6e0ce; }
+.research-ack-check { display: flex; align-items: flex-start; gap: 12px; padding: 16px; margin: 24px 0; background: #202d33; border: 1px solid #556970; border-radius: 8px; font-size: 15px; line-height: 1.5; cursor: pointer; }
+.research-ack-check input { flex: 0 0 auto; width: 20px; height: 20px; margin: 2px 0 0; accent-color: #b6e0ce; }
+.research-ack-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.research-ack-dialog .research-notice-fine, .research-notice-fine { color: #b1c0c7; font-size: 12px; line-height: 1.6; }
+.research-ack-dialog :focus-visible, .research-entry :focus-visible, .research-accepted-banner :focus-visible { outline: 3px solid #f1cf8c; outline-offset: 4px; }
+.research-ack-dialog h2:focus { outline: none; }
+.research-accepted-banner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 10px max(20px, calc((100vw - 1440px) / 2)); background: #1b2c2b; border-bottom: 1px solid #48605b; color: #dce9e5; font-size: 13px; }
+.research-accepted-banner button { padding: 7px 12px; }
+.research-persistent-notice { max-width: 1000px; padding: 0 24px; margin: 0 auto; }
+.research-license-footer { max-width: 1100px; display: flex; flex-wrap: wrap; gap: 12px 20px; margin: 0 auto; padding: 24px; color: #aabbc3; font-size: 12px; line-height: 1.6; }
+@media (max-width: 520px) { .research-ack-actions { flex-direction: column; } .research-ack-actions button { width: 100%; } .research-accepted-banner { align-items: flex-start; } }
